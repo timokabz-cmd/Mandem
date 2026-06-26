@@ -15,19 +15,21 @@ st.set_page_config(
 )
 
 # ------------------------------------------------------------------
-# 2. Shared taxonomy (single source of truth — used by both the
-#    citizen filters AND the CMS form, so they can never drift apart)
+# 2. Shared Taxonomies & Single Sources of Truth
 # ------------------------------------------------------------------
 STAGES = ["Idea Stage", "Startup Stage", "Growth Stage", "Mature MSME Stage"]
 SECTORS = ["Agriculture & Agribusiness", "Trade & Retail", "Digital & ICT", "Manufacturing"]
+CAPITAL_TIERS = ["Micro (Under UGX 5M)", "Small (UGX 5M - 20M)", "Medium/Commercial (UGX 20M+)"]
 
 # ------------------------------------------------------------------
-# 3. File-based persistence
+# 3. Dual-Database File Persistence Framework
 # ------------------------------------------------------------------
-DB_FILE = "gov_db.json"
+GOV_DB_FILE = "gov_db.json"
+BLUEPRINT_DB_FILE = "blueprint_db.json"
 FEEDBACK_FILE = "feedback_log.json"
 
-DEFAULT_DB = [
+# Master Dataset 1: Official Regulatory & Funding Channels
+DEFAULT_GOV_DB = [
     {
         "id": "peg-001",
         "title": "Parish Agricultural Value Chain Grant Support",
@@ -36,30 +38,8 @@ DEFAULT_DB = [
         "sector": "Agriculture & Agribusiness",
         "eligibility": "Subsistence households organized in a registered Parish Enterprise Group (PEG). 30% reserved for Youth.",
         "cost": "Free (Zero statutory charges)",
-        "steps": "1. Register with your local LC1 Chair. 2. Join a verified Parish Enterprise Group. 3. Apply via the Parish Development Management Information System (PBMIS).",
+        "steps": "1. Register with your local LC1 Chair. 2. Join a verified Parish Enterprise Group. 3. Apply via the PBMIS portal.",
         "contacts": "PDM Desk Officer at Sub-County level"
-    },
-    {
-        "id": "emyooga-001",
-        "title": "Emyooga Specialized Category Seed Capital Access",
-        "agency": "Microfinance Support Centre (MSC)",
-        "stage": "Idea Stage",
-        "sector": "Manufacturing",
-        "eligibility": "Active members of specialized localized enterprise associations (e.g., tailors, mechanics, carpenters) verified at village level via LC1 leadership.",
-        "cost": "One-off membership fee of UGX 10,000 and annual subscription fee of UGX 10,000 to your localized association.",
-        "steps": "1. Form or join an enterprise-specific association at the Parish level with local LC1 endorsement. 2. Merge with at least 5 similar local associations to form a constituency Apex SACCO. 3. Mobilize internal savings and apply for seed capital allocations through MSC distribution windows.",
-        "contacts": "Local District Commercial Officer or nearest MSC Zonal Branch Office"
-    },
-    {
-        "id": "ursb-001",
-        "title": "URSB Online Business Name Registration",
-        "agency": "Uganda Registration Services Bureau",
-        "stage": "Startup Stage",
-        "sector": "Trade & Retail",
-        "eligibility": "Any Ugandan citizen aged 18+ with a valid National ID (NIN).",
-        "cost": "UGX 80,000 Total (UGX 35,000 name reservation fee + UGX 45,000 assessment fee).",
-        "steps": "1. Log into URSB OBRS portal. 2. Run a name availability search. 3. Complete digitized Form 3 and pay via Mobile Money.",
-        "contacts": "URSB Help Desk: 0800 100 006"
     },
     {
         "id": "ursb-002",
@@ -67,32 +47,10 @@ DEFAULT_DB = [
         "agency": "Uganda Registration Services Bureau",
         "stage": "Startup Stage",
         "sector": "Manufacturing",
-        "eligibility": "Enterprises with a minimum of two directors holding valid Ugandan National IDs (NIN) or foreign passports.",
-        "cost": "UGX 140,000 baseline (UGX 105,000 registration fee if share capital is under UGX 5,000,000 + UGX 35,000 name reservation assessment).",
-        "steps": "1. Reserve company name online via the OBRS portal. 2. Upload digitized copies of the Memorandum and Articles of Association. 3. Complete Form 18 (Situation of Registered Office) and Form 20 (Particulars of Directors) before submitting electronic evaluation.",
+        "eligibility": "Enterprises with a minimum of two directors holding valid Ugandan National IDs (NIN).",
+        "cost": "UGX 140,000 baseline registration assessment fees.",
+        "steps": "1. Reserve company name online via OBRS portal. 2. Upload digitized Memorandum and Articles of Association. 3. Complete Form 18 and Form 20 parameters.",
         "contacts": "URSB Bureau Head Office, Kampala / obrs.ursb.go.ug"
-    },
-    {
-        "id": "ura-001",
-        "title": "URA Corporate Tax Identification Number (TIN)",
-        "agency": "Uganda Revenue Authority",
-        "stage": "Startup Stage",
-        "sector": "Trade & Retail",
-        "eligibility": "Every business operating in Uganda, including sole proprietors, partnerships, and companies.",
-        "cost": "Free (Zero registration charges)",
-        "steps": "1. Secure your registration certificate from URSB. 2. Access the URA e-services web portal. 3. Upload director identification cards (NIN) and proof of business premises. 4. Submit electronic form to generate a 10-digit TIN.",
-        "contacts": "URA Customer Care Toll-Free: 0800 117 000"
-    },
-    {
-        "id": "maaif-001",
-        "title": "MAAIF Micro-Scale Irrigation Matching Grant",
-        "agency": "Ministry of Agriculture, Animal Industry, and Fisheries",
-        "stage": "Growth Stage",
-        "sector": "Agriculture & Agribusiness",
-        "eligibility": "Smallholder farmers cultivating between 1 and 2.5 acres of land with a reliable water source situated within 700 meters.",
-        "cost": "Co-financed: Government covers 75% of solar pump costs (up to UGX 7.2 Million). Farmer co-pays the remaining 25% (approx. UGX 2M - 8M per acre).",
-        "steps": "1. Pick up and submit an Expression of Interest (EoI) form at your local District Headquarters. 2. Host the District Production Officer for a technical farm layout audit. 3. Approve system specification and pay your 25% equity contribution to initiate regional procurement.",
-        "contacts": "District Production/Agricultural Officer at local District HQ or UgIFTirrigation@agriculture.go.ug"
     },
     {
         "id": "grow-001",
@@ -100,65 +58,47 @@ DEFAULT_DB = [
         "agency": "Private Sector Foundation Uganda / MoGLSD",
         "stage": "Growth Stage",
         "sector": "Trade & Retail",
-        "eligibility": "Micro or small enterprises owned by women (minimum 51% shareholding) with a valid trading license and verifiable financial cashflows.",
-        "cost": "Zero application or bank processing fees. Loans are offered at an interest rate cap of 10%–12% per year with amounts ranging between UGX 4 Million and UGX 200 Million.",
-        "steps": "1. Ensure your active business operations match World Bank environmental and social safeguard compliance standards. 2. Hold or open an operational account with an active participating financial institution. 3. Present flexible security alternatives (such as movable household assets, or group/personal guarantees) to finalize drawdowns.",
-        "contacts": "GROW Project Secretariat Hub at Private Sector Foundation Uganda (PSFU) or grow@psfu.org.ug"
-    },
+        "eligibility": "Micro or small enterprises owned by women (minimum 51% shareholding) with a valid trading license.",
+        "cost": "Zero application fees. Concessionary borrowing rates fixed at 10%-12% per annum.",
+        "steps": "1. Confirm business functions match social safeguard baselines. 2. Present flexible security options to a participating commercial bank partner.",
+        "contacts": "GROW Project Secretariat Hub at PSFU / grow@psfu.org.ug"
+    }
+]
+
+# Master Dataset 2: "It Works. Try It." Business Histories & Content Blueprints
+DEFAULT_BLUEPRINT_DB = [
     {
-        "id": "nssf-001",
-        "title": "NSSF Hi-Innovator Seed Funding Accelerator",
-        "agency": "National Social Security Fund & Mastercard Foundation",
-        "stage": "Growth Stage",
-        "sector": "Digital & ICT",
-        "eligibility": "Legally registered multi-founder businesses (minimum 2 co-founders) operational for 2+ years, with a minimum generated baseline revenue of UGX 20 Million.",
-        "cost": "Free to apply (Qualifies recipients for up to UGX 75 Million in catalytic grant/seed funding).",
-        "steps": "1. Create an institutional profile on the Hi-Innovator web portal. 2. Enroll in and complete the foundational self-directed Business Academy course. 3. Participate in standard learning labs. 4. Pitch your operational metrics during an active open funding window.",
-        "contacts": "Outbox Uganda / Hi-Innovator Support Desks at info@hi-innovator.ug"
-    },
-    {
-        "id": "udb-001",
-        "title": "Uganda Development Bank (UDB) SME Kazi Loan",
-        "agency": "Uganda Development Bank",
-        "stage": "Growth Stage",
-        "sector": "Digital & ICT",
-        "eligibility": "Registered Small and Medium Enterprises with an annual turnover between UGX 100 Million and UGX 360 Million.",
-        "cost": "One-time internal processing appraisal fee of 0.75% to 1.00% of the total loan volume. Capital borrowing rates fixed between 10%–12% per annum.",
-        "steps": "1. Obtain an application letter layout using official corporate letterheads. 2. Provide audited accounts covering the past 2 operating years alongside complete bank logs. 3. Submit a formalized business plan outline to unlock disbursements between UGX 50 Million and UGX 720 Million.",
-        "contacts": "UDB Specialized Programs Investment Desk: +256 414 355 550"
-    },
-    {
-        "id": "unbs-001",
-        "title": "UNBS Small Business Quality Mark Certification",
-        "agency": "Uganda National Bureau of Standards",
-        "stage": "Mature MSME Stage",
-        "sector": "Manufacturing",
-        "eligibility": "Locally active manufacturing enterprises processing physical retail goods with a valid company URA TIN.",
-        "cost": "UGX 500,000 per year for Micro & Small Enterprises (Per product brand permit issued, plus separate localized laboratory sample testing fees).",
-        "steps": "1. Confirm your company tax profile has an active URA TIN. 2. Acquire standard guidelines corresponding to your product category. 3. Apply via the electronic URA portal. 4. Allow factory inspections by compliance auditors and supply batch physical samples for laboratory analysis.",
-        "contacts": "UNBS Certification Department Manager / National Standards Council"
-    },
-    {
-        "id": "nema-001",
-        "title": "NEMA Environmental Impact Assessment (ESIA) Clearance",
-        "agency": "National Environment Management Authority",
-        "stage": "Mature MSME Stage",
-        "sector": "Manufacturing",
-        "eligibility": "Commercial facilities or processing plants whose physical infrastructure frameworks might introduce environmental or local community residue changes.",
-        "cost": "UGX 100,000 filing fee paid via the URA framework. Certification costs scale based on specific capital footprint evaluations.",
-        "steps": "1. Contract a certified environmental practitioner registered on NEMA's ELMIS network. 2. Compile an Environmental and Social Impact Assessment study detailing waste metrics. 3. Upload final portfolios to the NEMA portal to secure an official Certificate of Approval.",
-        "contacts": "NEMA Environmental Compliance Registry Desk / finance.revenue@nema.go.ug"
-    },
-    {
-        "id": "ucda-001",
-        "title": "UCDA Official Coffee Export Marketing Licensing",
-        "agency": "Uganda Coffee Development Authority",
-        "stage": "Mature MSME Stage",
+        "id": "bp-poultry-001",
+        "title": "High-Yield Commercial Poultry Blueprint (5,000 Birds)",
         "sector": "Agriculture & Agribusiness",
-        "eligibility": "Registered export trading companies processing a robust corporate profile, Memorandum and Articles of Association, and secured access to a certified coffee reprocessing factory.",
-        "cost": "UGX 1.5 Million annual statutory registration fee, coupled with a performance bond equivalent to US$ 25,000 (Non-cash banking instrument format).",
-        "steps": "1. Formulate an applicant profile containing certified shareholder and management setups. 2. Present material proof of access to an active green-coffee reprocessing facility capable of milling standard export grades. 3. Provide the UCDA licensing desk with the executed performance bond documents.",
-        "contacts": "Uganda Coffee Development Authority Licensing and Quality Regulatory Hub, Kampala"
+        "tier": "Medium/Commercial (UGX 20M+)",
+        "capital_required": "UGX 35,000,000 - UGX 45,000,000 (Chicks, feed cycle, and structures)",
+        "summary": "Detailed implementation operational guide for scaling a commercial layer poultry unit. Focuses on biosecurity controls, deep-litter housing layout vectors, and high-tier nutritional sourcing metrics.",
+        "fin_lit_tip": "CRITICAL CASHFLOW METRIC: Point-of-lay birds require intensive feed inputs for the first 18-20 weeks before generating single-egg revenues. Maintain a minimum working capital reserve equal to 45% of infrastructure cost exclusively for feed layers.",
+        "success_case": "Case Study: Ronald K. from Wakiso District successfully expanded from 200 birds to 5,500 birds using localized feed formulation techniques.",
+        "media_anchor": "📺 Video Link: 'It Works. Try It.' — Episode 12: Structuring Poultry Run-Rates"
+    },
+    {
+        "id": "bp-coffee-001",
+        "title": "Smallholder Arabica/Robusta Coffee Cultivation Roadmap",
+        "sector": "Agriculture & Agribusiness",
+        "tier": "Small (UGX 5M - 20M)",
+        "capital_required": "UGX 6,500,000 (Per acre including land prep, high-yield plantlets, and fertilizer lines)",
+        "summary": "Step-by-step land spacing mapping (3m x 3m for Robusta) optimizing yield metrics per acre. Features integrated intercropping systems with seasonal cash crops to provide immediate short-term farm liquidity.",
+        "fin_lit_tip": "HARVEST CYCLING: Coffee is a long-term economic anchor requiring 2-3 years to mature. Intercrop with beans or matooke during seasons 1 and 2 to absorb maintenance cash-burn until your primary harvest windows open.",
+        "success_case": "Case Study: Nabakooza Mary in Masaka managed to self-fund her processing huller equipment using high-density organic intercropping returns.",
+        "media_anchor": "📺 Video Link: 'It Works. Try It.' — Episode 08: Intercropping Cash Extraction Strategies"
+    },
+    {
+        "id": "bp-bakery-001",
+        "title": "Urban Specialized Bakery & Pastry Setup",
+        "sector": "Manufacturing",
+        "tier": "Small (UGX 5M - 20M)",
+        "capital_required": "UGX 12,000,000 (Commercial deck oven, high-capacity mixer, and premises retrofitting)",
+        "summary": "A startup production template detailing daily raw material handling, local government health certification guidelines, and decentralized distributions targeting corner retail stores.",
+        "fin_lit_tip": "ASSET DEPRECIATION CONTROL: Prioritize high-quality locally fabricated stainless steel tables but invest heavily in a standard imported deck oven with predictable heat regulation parameters to eliminate batch spoilage.",
+        "success_case": "Case Study: Edge Bakery Project started with a single domestic home oven in Kamwokya and now supplies 14 retail shops across Kampala central.",
+        "media_anchor": "📺 Video Link: 'It Works. Try It.' — Episode 19: Bakery Unit Economics Demystified"
     }
 ]
 
@@ -176,27 +116,15 @@ def save_json(path, data):
         json.dump(data, f, indent=2)
 
 
-def load_db():
-    return load_json(DB_FILE, DEFAULT_DB)
-
-
-def save_db(data):
-    save_json(DB_FILE, data)
-
-
-def load_feedback():
-    return load_json(FEEDBACK_FILE, [])
-
-
-def save_feedback(data):
-    save_json(FEEDBACK_FILE, data)
-
-
+# Initializing memory caches
 if "gov_db" not in st.session_state:
-    st.session_state.gov_db = load_db()
+    st.session_state.gov_db = load_json(GOV_DB_FILE, DEFAULT_GOV_DB)
+
+if "blueprint_db" not in st.session_state:
+    st.session_state.blueprint_db = load_json(BLUEPRINT_DB_FILE, DEFAULT_BLUEPRINT_DB)
 
 if "feedback_log" not in st.session_state:
-    st.session_state.feedback_log = load_feedback()
+    st.session_state.feedback_log = load_json(FEEDBACK_FILE, [])
 
 # ------------------------------------------------------------------
 # 4. Sidebar Navigation & Developer Controls
@@ -218,9 +146,11 @@ view = st.sidebar.radio(
 st.sidebar.write("---")
 st.sidebar.markdown("### 🛠️ Developer Controls")
 if st.sidebar.button("🔄 Reset Demo Data (DB + Feedback)"):
-    save_db(DEFAULT_DB)
-    save_feedback([])
-    st.session_state.gov_db = load_db()
+    save_json(GOV_DB_FILE, DEFAULT_GOV_DB)
+    save_json(BLUEPRINT_DB_FILE, DEFAULT_BLUEPRINT_DB)
+    save_json(FEEDBACK_FILE, [])
+    st.session_state.gov_db = load_json(GOV_DB_FILE, DEFAULT_GOV_DB)
+    st.session_state.blueprint_db = load_json(BLUEPRINT_DB_FILE, DEFAULT_BLUEPRINT_DB)
     st.session_state.feedback_log = []
     st.rerun()
 
@@ -228,110 +158,128 @@ if st.sidebar.button("🔄 Reset Demo Data (DB + Feedback)"):
 # VIEW 1: CITIZEN WHATSAPP SIMULATOR
 # ==================================================================
 if view == "📱 Citizen WhatsApp Simulator":
-    st.title("WhatsApp-First Prototype Flow")
-    st.info("💡 Simulated View: This represents the logic executing behind a user's WhatsApp interface via QR Code check-in at an LC1 Office.")
+    st.title("WhatsApp-First Interactive Prototype Flow")
+    st.info("💡 Simulated View: This emulates the logic executed by the automated Edge Lab WhatsApp bot framework.")
 
-    col_nav1, col_nav2 = st.columns(2)
-    
-    with col_nav1:
-        st.subheader("Interactive Menu Options")
-        selected_stage = st.selectbox("WhatsApp Button Send: Choose Your Stage", ["Select Stage"] + STAGES)
+    w_tab1, w_tab2 = st.tabs(["🏛️ Official Government Services", "📺 'It Works. Try It.' Business Blueprints"])
 
-        selected_sector = "Select Sector"
-        if selected_stage != "Select Stage":
-            selected_sector = st.selectbox("WhatsApp Button Send: Choose Your Sector", ["Select Sector"] + SECTORS)
+    with w_tab1:
+        col_nav1, col_nav2 = st.columns(2)
+        with col_nav1:
+            selected_stage = st.selectbox("Choose Your Current Lifecycle Stage:", ["Select Stage"] + STAGES)
+            selected_sector = st.selectbox("Choose Your Target Sector:", ["Select Sector"] + SECTORS) if selected_stage != "Select Stage" else "Select Sector"
+        with col_nav2:
+            gov_search = st.text_input("🔍 Quick Keyword Search (e.g., 'URSB', 'Grant'):", value="")
 
-    with col_nav2:
-        st.subheader("🔍 Smart Text Search Gateway")
-        search_query = st.text_input("Or Type a Keyword Directly (e.g., 'URSB', 'Grant', 'TIN'):", value="", help="Allows instant semantic matching against titles, steps, and managing agency departments.")
+        with st.container(border=True):
+            st.caption("Incoming from Edge Lab Bot • Regulatory Portal")
+            matched_gov = []
+            
+            if gov_search.strip():
+                q = gov_search.lower()
+                matched_gov = [c for c in st.session_state.gov_db if q in c.get("title","").lower() or q in c.get("agency","").lower()]
+            elif selected_stage != "Select Stage" and selected_sector != "Select Sector":
+                matched_gov = [c for c in st.session_state.gov_db if c.get("stage") == selected_stage and c.get("sector") == selected_sector]
 
+            if matched_gov:
+                for card in matched_gov:
+                    st.markdown(f"🤖 📄 **OFFICIAL REGULATORY SERVICE: {card.get('title')}**")
+                    st.markdown(f"* **Ministry/Agency:** {card.get('agency')}")
+                    st.markdown(f"* **Qualifications:** {card.get('eligibility')}")
+                    st.markdown(f"* **Execution Steps:** {card.get('steps')}")
+                    st.markdown(f"* **Statutory Fee:** `{card.get('cost')}`")
+                    st.write("---")
+            else:
+                st.caption("Adjust your structural filters above to display official ministry compliance options.")
+
+    with w_tab2:
+        col_bp1, col_bp2 = st.columns(2)
+        with col_bp1:
+            selected_bp_sector = st.selectbox("Filter Blueprints by Industry Sector:", ["Select Sector"] + SECTORS)
+            selected_bp_tier = st.selectbox("Filter by Initial Capital Tier Budget:", ["Select Tier"] + CAPITAL_TIERS) if selected_bp_sector != "Select Sector" else "Select Tier"
+        with col_bp2:
+            bp_search = st.text_input("🔍 Search Concepts (e.g., 'Poultry', 'Coffee', 'Bakery'):", value="")
+
+        with st.container(border=True):
+            st.caption("Incoming from Edge Lab Bot • Knowledge & Financial Literacy Stream")
+            matched_bp = []
+
+            if bp_search.strip():
+                q = bp_search.lower()
+                matched_bp = [b for b in st.session_state.blueprint_db if q in b.get("title","").lower() or q in b.get("summary","").lower() or q in b.get("success_case","").lower()]
+            elif selected_bp_sector != "Select Sector" and selected_bp_tier != "Select Tier":
+                matched_bp = [b for b in st.session_state.blueprint_db if b.get("sector") == selected_bp_sector and b.get("tier") == selected_bp_tier]
+
+            if matched_bp:
+                for bp in matched_bp:
+                    st.markdown(f"### 💡 {bp.get('title')}")
+                    st.caption(f"📂 Sector: {bp.get('sector')} | Capital Tier Allocation: {bp.get('tier')}")
+                    st.markdown(f"💰 **Estimated Startup Capital Requirement:** \n`{bp.get('capital_required')}`")
+                    st.markdown("📝 **Core Strategic Summary:**")
+                    st.write(bp.get("summary"))
+                    st.markdown("📊 **Financial Literacy Masterclass Note:**")
+                    st.info(bp.get("fin_lit_tip"))
+                    st.markdown("🏆 **Field Proof Verification:**")
+                    st.success(bp.get("success_case"))
+                    st.markdown(f"🔗 **Production Media Anchor:** \n`{bp.get('media_anchor')}`")
+                    st.write("---")
+            else:
+                st.warning("🤖 Select an industry sector and capital tier budget or type a keyword search pattern to inspect our interactive 'It Works. Try It.' production summaries.")
+
+    # ------------------------------------------------------------------
+    # Dual Synthesis Conversational Copilot Block
+    # ------------------------------------------------------------------
     st.write("---")
-    st.subheader("💬 WhatsApp Screen Emulator")
-
-    with st.container(border=True):
-        st.caption("Incoming from Edge Lab Bot • Active")
-        st.write("🤖 **Welcome to Edge Lab Platform!** You scanned the QR code at **LC1 Anchor Office**. Please interact with the filter options or type a search query above.")
-
-        matched = []
+    st.markdown("### 🤖 Edge Lab Conversational AI Copilot (Dual-Synthesis Engine)")
+    st.caption("Simulated Context-Aware LLM Endpoint — Programmatically cross-referencing Official Policy with Real-World Field Blueprints.")
+    
+    ai_prompt = st.text_input("Ask any unstructured business question (e.g., 'I want to start a poultry farm, how do I get funding and survive the first months?'):")
+    
+    if ai_prompt:
+        q_lower = ai_prompt.lower()
         
-        if search_query.strip() != "":
-            q = search_query.lower()
-            matched = [
-                card for card in st.session_state.gov_db
-                if q in card.get("title", "").lower() 
-                or q in card.get("agency", "").lower() 
-                or q in card.get("steps", "").lower()
-                or q in card.get("eligibility", "").lower()
-            ]
-            st.success(f"🧑 **WhatsApp Typed Query:** \"{search_query}\" ({len(matched)} match found)")
-        elif selected_stage != "Select Stage":
-            st.success(f"🧑 **I chose stage:** {selected_stage}")
-            if selected_sector != "Select Sector":
-                st.success(f"🧑 **My sector is:** {selected_sector}")
-                matched = [
-                    card for card in st.session_state.gov_db
-                    if card.get("stage") == selected_stage and card.get("sector") == selected_sector
-                ]
-
-        if (selected_stage != "Select Stage" and selected_sector != "Select Sector") or search_query.strip() != "":
-            if matched:
-                for card in matched:
-                    st.write("---")
-                    st.markdown(f"🤖 📄 **OFFICIAL SERVICE CARD: {card.get('title', 'N/A')}**")
-                    st.markdown(f"* 🏛️ **Agency:** {card.get('agency', 'N/A')}")
-                    st.markdown(f"* 🎯 **Who Qualifies:** {card.get('eligibility', 'N/A')}")
-                    st.markdown(f"* 🛠️ **Steps to Take:** {card.get('steps', 'N/A')}")
-                    st.markdown(f"* 💰 **Statutory Cost:** `{card.get('cost', 'N/A')}`")
-                    st.markdown(f"* 📞 **Support Desk:** {card.get('contacts', 'N/A')}")
-
-                    st.write("---")
-                    st.caption("👉 *Did this official information help you today?*")
-                    f_col1, f_col2 = st.columns(2)
-                    if f_col1.button("👍 Yes, clear steps", key=f"yes_{card['id']}"):
-                        st.session_state.feedback_log.append({
-                            "timestamp": datetime.now().isoformat(timespec="seconds"),
-                            "program": card["title"],
-                            "status": "Helpful"
-                        })
-                        save_feedback(st.session_state.feedback_log)
-                        st.success("System routing verification entry saved!")
-                    if f_col2.button("👎 No, still confusing", key=f"no_{card['id']}"):
-                        st.session_state.feedback_log.append({
-                            "timestamp": datetime.now().isoformat(timespec="seconds"),
-                            "program": card["title"],
-                            "status": "Friction Warning"
-                        })
-                        save_feedback(st.session_state.feedback_log)
-                        st.error("Optimization query dispatched to ministry lead.")
-            else:
-                st.warning("🤖 No program matches this exact profile permutation yet. Use the CMS portal to instantiate a card layout.")
-
-        st.write("---")
-        st.markdown("### 🤖 Edge Lab Conversational AI Copilot")
-        st.caption("Simulated LLM Sandboxed Environment — Powered securely via encrypted background application context.")
+        # Internal search simulation across both engines
+        copied_gov = [c for c in st.session_state.gov_db if any(w in c.get("title","").lower() or c.get("sector","").lower() for w in q_lower.split())]
+        copied_bp = [b for b in st.session_state.blueprint_db if any(w in b.get("title","").lower() or b.get("summary","").lower() for w in q_lower.split())]
         
-        ai_prompt = st.text_input("Ask an unstructured policy query (e.g., 'How do I start an agricultural venture as a youth group?'):")
-        
-        if ai_prompt:
-            if "OPENAI_API_KEY" in st.secrets or "ANTHROPIC_API_KEY" in st.secrets:
-                st.info("✨ Secure API Context Active: Formulating verified, context-aware policy synthesis using live backend data layers...")
-                st.write("🤖 **AI Assistant Synthesis:** Based on active national frameworks, you must first cluster into a registered group at your local sub-county level to access targeted value-chain grant mechanisms.")
-            else:
-                st.warning("🔒 Secure Sandbox Mode Active: Real production LLM tokens are safely isolated via `.streamlit/secrets.toml` variables.")
-                with st.expander("🛠️ View Production Key Architecture Setup"):
-                    st.code("""
-# Verified secure deployment setup inside .streamlit/secrets.toml (Gitignored)
-OPENAI_API_KEY = "sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-ANTHROPIC_API_KEY = "sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                    """, language="toml")
-                st.write(f"🤖 **Simulated Response for:** *\"{ai_prompt}\"* \n\nI scanned the active database repositories. To qualify for frameworks like the **Parish Agricultural Value Chain Grant**, you must ensure your enterprise group structure has at least a 30% composition allocation explicitly reserved for youth engagement vectors.")
+        with st.chat_message("assistant"):
+            st.markdown("#### 🤖 Edge Lab Integrated Synthesis Response")
+            st.write("I have analyzed your query and generated a strategy map combining official national entry channels with practical economic execution blueprints:")
+            
+            # Column layout for dual response display
+            syn_col1, syn_col2 = st.columns(2)
+            
+            with syn_col1:
+                st.markdown("📂 **1. Official Frameworks & Compliance Paths**")
+                if copied_gov:
+                    for g in copied_gov[:1]:
+                        st.markdown(f"**Recommended Vehicle:** {g.get('title')}")
+                        st.markdown(f"* **Managing Body:** {g.get('agency')}")
+                        st.markdown(f"* **Actionable Step:** {g.get('steps')}")
+                        st.markdown(f"* **Statutory Fees:** `{g.get('cost')}`")
+                else:
+                    st.write("• Form an enterprise group at your local sub-county to align with upcoming PDM asset support allocations.")
+                    st.write("• Register your unique business identity structure online via the URSB OBRS gateway.")
+            
+            with syn_col2:
+                st.markdown("📊 **2. 'It Works. Try It.' Financial Literacy Matrix**")
+                if copied_bp:
+                    for b in copied_bp[:1]:
+                        st.markdown(f"**Operational Target:** {b.get('title')}")
+                        st.markdown(f"* **Capital Threshold:** `{b.get('capital_required')}`")
+                        st.info(f"💡 **Survival Metric:** {b.get('fin_lit_tip')}")
+                        st.success(f"🏆 {b.get('success_case')}")
+                        st.markdown(f"🔗 Watch detailed field metrics: `{b.get('media_anchor')}`")
+                else:
+                    st.write("• Maintain a liquid cash cushion equivalent to 40% of setup parameters to absorb initial cyclical cash-burn variations.")
+                    st.write("• Document your unit economics via digital cash-flow logs starting from day one of product cycle testing.")
 
 # ==================================================================
 # VIEW 2: CITIZEN USSD SIMULATOR 
 # ==================================================================
 elif view == "📟 Citizen USSD Simulator":
     st.title("USSD Feature-Phone Simulation Layer")
-    st.info("💡 Simulated View: This emulates the offline text interface a citizen sees when dialing a shortcode (e.g., `*284#`) via an Africa's Talking telco aggregator link.")
+    st.info("💡 Simulated View: Emulating cell telco carrier text handshakes over analog frameworks.")
     
     if "ussd_string" not in st.session_state:
         st.session_state.ussd_string = ""
@@ -340,245 +288,59 @@ elif view == "📟 Citizen USSD Simulator":
     
     with col_input:
         st.subheader("Keypad Action Entry")
-        st.write("In production, Africa's Talking forwards text selections as a concatenated string delimited by asterisks (e.g., `1`, `1*2`). Enter your input below:")
-        
-        current_input = st.text_input(
-            "Type your numeric choices (Leave blank to view main menu):", 
-            value=st.session_state.ussd_string,
-            help="Type '1' for Stages, '2' for Sectors, or step sequences like '1*1' for Stage 1 -> Sector 1."
-        )
+        current_input = st.text_input("Type your numeric choices:", value=st.session_state.ussd_string)
         st.session_state.ussd_string = current_input.strip()
         
-        st.write("#### 🧭 Quick Reference Navigation Strings:")
+        st.write("#### 🧭 Core Command Navigation Matrix:")
         st.markdown("""
-        * Leave Blank / Reset $\rightarrow$ **Main Gateway Menu**
-        * `1` $\rightarrow$ View Business Lifecycle Stages
-        * `1*1` $\rightarrow$ Stage 1 (Idea Stage) $\rightarrow$ Displays Sector Selection List
-        * `1*1*1` $\rightarrow$ Stage 1 $\rightarrow$ Sector 1 (Agribusiness Opportunities)
-        * `1*3*2` $\rightarrow$ Stage 3 (Growth Stage) $\rightarrow$ Sector 2 (Trade & Retail Opportunities)
-        * `2` $\rightarrow$ Structural Taxonomies Overview
+        * Leave Blank $\rightarrow$ **Main Welcome Gateway Menu**
+        * `1` $\rightarrow$ View Programs by Lifecycle Stage
+        * `4` $\rightarrow$ **Launch 'It Works. Try It.' Business Blueprints Engine**
+        * `4*1` $\rightarrow$ Sector 1 (Agribusiness) $\rightarrow$ Displays available operational lists
+        * `4*1*1` $\rightarrow$ Displays direct cost/financial metrics for **Poultry Farms (5,000 birds)**
         """)
-        
-        if st.button("❌ Reset/End USSD Call Session"):
+        if st.button("❌ Terminate Current USSD Session"):
             st.session_state.ussd_string = ""
             st.rerun()
 
     with col_screen:
         st.subheader("📟 Simulated Feature-Phone Screen")
-        
         with st.container(border=True):
-            st.caption("Carrier Protocol Stream • Active Session")
-            
             raw_string = st.session_state.ussd_string
             
             if raw_string == "":
-                st.code("CON Welcome to Edge Lab Gateway.\n1. Find Programs by Stage\n2. View Sector Matrices\n3. About Edge Lab", language="text")
-            
+                st.code("CON Welcome to Edge Lab.\n1. Find Gov Services\n2. View Taxonomies\n3. About Hub\n4. Business Blueprints ('It Works')", language="text")
             elif raw_string == "1":
-                st.code("CON Choose Lifecycle Stage:\n1. Idea Stage\n2. Startup Stage\n3. Growth Stage\n4. Mature MSME Stage", language="text")
-            
-            elif raw_string.startswith("1*"):
-                tokens = raw_string.split("*")
-                stage_idx = int(tokens[1]) - 1 if (len(tokens) > 1 and tokens[1].isdigit()) else -1
-                
-                if 0 <= stage_idx < len(STAGES):
-                    selected_stage = STAGES[stage_idx]
-                    
-                    if len(tokens) == 2:
-                        st.code(f"CON Profile: {selected_stage}\nSelect Target Sector:\n1. Agriculture & Agribusiness\n2. Trade & Retail\n3. Digital & ICT\n4. Manufacturing", language="text")
-                    elif len(tokens) == 3:
-                        sector_idx = int(tokens[2]) - 1 if tokens[2].isdigit() else -1
-                        if 0 <= sector_idx < len(SECTORS):
-                            selected_sector = SECTORS[sector_idx]
-                            
-                            matched = [
-                                card for card in st.session_state.gov_db
-                                if card.get("stage") == selected_stage and card.get("sector") == selected_sector
-                            ]
-                            
-                            if matched:
-                                out_str = f"END Matches Found for {selected_stage}:\n"
-                                for item in matched[:2]: 
-                                    out_str += f"- {item.get('title', 'N/A')}\nCost: {item.get('cost', 'N/A')}\n"
-                                st.code(out_str, language="text")
-                            else:
-                                st.code(f"END No active programs registered under {selected_stage} - {selected_sector} yet.", language="text")
-                        else:
-                            st.code("END Error: Invalid sector selected.", language="text")
-                else:
-                    st.code("END Error: Invalid stage choice configuration.", language="text")
-            
-            elif raw_string == "2":
-                st.code("END Active Target Sector Frameworks:\n1. Agribusiness\n2. Trade/Retail\n3. Tech Infrastructure\n4. Heavy Manufacturing", language="text")
-            
-            elif raw_string == "3":
-                st.code("END Edge Lab Platform v1.2\nNational MSME & Youth Opportunity Knowledge Infrastructure.\nKampala, Uganda.", language="text")
-            
+                st.code("CON Choose Lifecycle Stage:\n1. Idea Stage\n2. Startup Stage\n3. Growth Stage", language="text")
+            elif raw_string == "4":
+                st.code("CON Select Industry Target Sector:\n1. Agribusiness\n2. Trade & Retail\n3. Digital & ICT\n4. Manufacturing", language="text")
+            elif raw_string == "4*1":
+                st.code("CON Agribusiness Content Library:\n1. Poultry Setup (5,000 Birds)\n2. Coffee Cultivation Guide", language="text")
+            elif raw_string == "4*1*1":
+                bp = st.session_state.blueprint_db[0] # Poultry
+                st.code(f"END {bp.get('title')}\nCap: {bp.get('capital_required')}\nLit Tip: Maintain 45% capital reserve backstop for feed layer cycles.", language="text")
+            elif raw_string == "4*1*2":
+                bp = st.session_state.blueprint_db[1] # Coffee
+                st.code(f"END {bp.get('title')}\nCost: {bp.get('capital_required')}\nTip: Intercrop with short-rotation cash crops seasons 1-2.", language="text")
+            elif raw_string == "4*4":
+                st.code("CON Manufacturing Content Library:\n1. Urban Specialized Bakery Setup", language="text")
+            elif raw_string == "4*4*1":
+                bp = st.session_state.blueprint_db[2] # Bakery
+                st.code(f"END {bp.get('title')}\nCap: {bp.get('capital_required')}\nTip: Use durable local steel tables; source imported deck ovens.", language="text")
             else:
-                st.code("END Invalid entry pattern. Please hang up and re-dial *284# to flush cache layers.", language="text")
+                st.code("END Interface exception. Command combination string not mapped. Dial *284# to refresh parameters.", language="text")
 
 # ==================================================================
 # VIEW 3: GOVERNMENT ADMIN CMS PORTAL
 # ==================================================================
 elif view == "🏛️ Government Admin CMS Portal":
-    st.title("Government Admin CMS Portal")
-    st.write("Enables direct administrative modification of program parameters, compliance metrics, and active fee structures.")
-
-    with st.form("cms_form", clear_on_submit=True):
-        st.markdown("### 📝 Upload/Modify Enterprise Opportunity Data Card")
-        new_title = st.text_input("Program Opportunity Name:", value="Emyooga Micro-Finance Credit Line")
-        new_agency = st.text_input("Managing Agency/Ministry:", value="Microfinance Support Centre")
-
-        new_stage = st.selectbox("Target Business Lifecycle Stage:", STAGES)
-        new_sector = st.selectbox("Target Sector Taxonomy:", SECTORS)
-
-        new_eligibility = st.text_area("Who Qualifies?", value="Active members of a specialized district category SACCO (e.g., Boda Boda operators, tailors).")
-        new_cost = st.text_input("Statutory Fee Required (e.g., UGX 253,250):", value="Free to join. Savings equity minimum applies.")
-        new_steps = st.text_area("Step-by-Step Application Milestones:", value="1. Join your local category SACCO. 2. Submit development business plan to the District Commercial Officer. 3. Vetting and fund distribution via commercial banks.")
-        new_contacts = st.text_input("Direct Officer Contact/Desk:", value="District Commercial Officer at your Local District HQ")
-
-        submit_btn = st.form_submit_button("🚀 Publish to National Gateway")
-
-        if submit_btn:
-            st.session_state.gov_db.append({
-                "id": str(uuid.uuid4())[:8],
-                "title": new_title,
-                "agency": new_agency,
-                "stage": new_stage,
-                "sector": new_sector,
-                "eligibility": new_eligibility,
-                "cost": new_cost,
-                "steps": new_steps,
-                "contacts": new_contacts
-            })
-            save_db(st.session_state.gov_db)
-            st.success(f"🎉 Success! '{new_title}' is now live on the citizen system. Switch to the 'Citizen WhatsApp Simulator' view to test it!")
-
-    st.write("---")
-    st.markdown("### 📋 Currently Published Cards")
-    if st.session_state.gov_db:
-        for card in st.session_state.gov_db:
-            with st.expander(f"{card.get('title', 'N/A')} — {card.get('stage', 'N/A')} / {card.get('sector', 'N/A')}"):
-                st.markdown(f"**🏛️ Agency:** {card.get('agency', '⚠️ Field Missing - Overwrite by resetting data')}")
-                st.markdown(f"**🎯 Who Qualifies:** {card.get('eligibility', '⚠️ Field Missing - Overwrite by resetting data')}")
-                st.markdown(f"**🛠️ Steps:** {card.get('steps', '⚠️ Field Missing - Overwrite by resetting data')}")
-                st.markdown(f"**💰 Cost:** `{card.get('cost', '⚠️ Field Missing - Overwrite by resetting data')}`")
-                st.markdown(f"**📞 Contact:** {card.get('contacts', '⚠️ Field Missing - Overwrite by resetting data')}")
-                
-                st.write("")
-                if st.button("🗑️ Delete this card", key=f"del_{card['id']}"):
-                    st.session_state.gov_db = [c for c in st.session_state.gov_db if c["id"] != card["id"]]
-                    save_db(st.session_state.gov_db)
-                    st.rerun()
-    else:
-        st.info("No cards published yet.")
-
-# ==================================================================
-# VIEW 4: GOV INTELLIGENCE DASHBOARD
-# ==================================================================
-elif view == "📊 Gov Intelligence Dashboard":
-    st.title("National MSME Demand Intelligence Matrix")
-    st.write("Anonymized, real-time demand insights collected from WhatsApp routing systems.")
-    st.caption("⚠️ Demo data below — illustrative only, not derived from real usage.")
-
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Total Scans via LC1 QR Blocks", "14,250", "+12% this week")
-    col2.metric("Active WhatsApp Flows", "8,940", "84% Completion Rate")
-    col3.metric("Highest Bottleneck Point", "URA Tax ID Setup", "Average 4.2 days dropoff", delta_color="inverse")
-
-    st.write("---")
-    st.subheader("Geographic and Sectoral Traffic Densities")
-    st.caption("⚠️ Demo data — illustrative only, not derived from real usage.")
-
-    chart_data = pd.DataFrame({
-        'Agribusiness': [3900, 4500, 2400],
-        'ICT': [400, 200, 1900],
-        'Logistics': [600, 300, 1200],
-        'Manufacturing': [650, 450, 800],
-        'Retail & Trade': [1800, 1100, 4100]
-    }, index=['Western Region', 'Northern Region', 'Central Region (Kampala)'])
-
-    st.bar_chart(chart_data.T)
-
-    with st.expander("🔍 View Policy Formulation Feedback Logs"):
-        st.caption("This reflects real button presses recorded in this running demo — not yet real field data from actual LC1 deployments.")
-        if st.session_state.feedback_log:
-            st.dataframe(pd.DataFrame(st.session_state.feedback_log), use_container_width=True)
-        else:
-            st.info("System streaming operational. Real-time logging metrics will populate here as live inputs are recorded.")
-
-    st.write("---")
-    st.subheader("🧱 National Infrastructure Production Blueprint")
-    st.info("🎯 Technical Transparency: This section explicitly maps out how this identical frontend logic transitions to scale in production using distributed microservices.")
+    st.title("Government Admin CMS & Content Management Portal")
     
-    tab_wa, tab_ussd = st.tabs(["💬 Real WhatsApp Business API Architecture", "📱 USSD Telco Aggregator Integration"])
-    
-    with tab_wa:
-        st.markdown("### Production WhatsApp Webhook Routing Matrix")
-        st.write("Streamlit serves as our centralized internal CMS portal, telemetry engine, and real-time data visualizer. In production, citizen queries do not touch the Streamlit UI—instead, they interact via Meta's infrastructure, which routes JSON webhooks into a lightweight backend microservice.")
-        
-        st.markdown("""
-        ```mermaid
-        [Citizen on WhatsApp] 
-               │  (Sends message/button interaction)
-               ▼
-        [Meta Cloud Infrastructure] 
-               │  (Dispatches HTTPS POST Webhook Event)
-               ▼
-        [Production API Gateway (FastAPI / Flask)] 
-               │  Reads/Parses incoming telephone number & payloads
-               ├──► Queries [gov_db.json / Shared Database Layer] 
-               └──► Streams telemetry counters back to [This Streamlit Intelligence Dashboard]
-        ```
-        """, unsafe_allow_html=True)
-        
-        with st.expander("📦 View Sample Microservice Production Hook Structure (FastAPI)"):
-            st.code("""
-from fastapi import FastAPI, Request, Response
-import requests
+    cms_tab1, cms_tab2 = st.tabs(["📝 Institutional Government Profiles", "🎬 'It Works. Try It.' Success Case Upload"])
 
-app = FastAPI()
-
-@app.post("/webhook")
-async def whatsapp_webhook(request: Request):
-    payload = await request.json()
-    
-    try:
-        whatsapp_id = payload["entry"][0]["changes"][0]["value"]["messages"][0]["from"]
-        message_body = payload["entry"][0]["changes"][0]["value"]["messages"][0]["text"]["body"]
-    except KeyError:
-        pass
-        
-    return Response(status_code=200)
-            """, language="python")
-
-    with tab_ussd:
-        st.markdown("### Production USSD Telecommunications Layout")
-        st.write("To guarantee access for citizens using analog feature phones without data access, the platform integrates with telco aggregators (such as **Africa's Talking**) via standard shortcode handshakes.")
-        
-        st.markdown("""
-        * **Shortcode Protocol:** User dials an assigned string (e.g., `*284#`) on MTN or Airtel networks.
-        * **Aggregator Forwarding:** The telco aggregator captures the string session state parameters and transforms them into standard HTTP form-data parameters (`sessionId`, `phoneNumber`, `text`).
-        * **Dynamic State Engine:** The underlying backend script reads the input string sequence to serve contextual textual menu prompts back to the carrier stream seamlessly.
-        """)
-        
-        with st.expander("📦 View Sample Aggregator Integration Framework"):
-            st.code("""
-# Production USSD Framework endpoint structure 
-@app.post("/ussd")
-async def ussd_gateway(request: Request):
-    form_data = await request.form()
-    
-    session_id = form_data.get("sessionId")
-    phone_number = form_data.get("phoneNumber")
-    user_input = form_data.get("text", "")
-    
-    if user_input == "":
-        response = "CON Welcome to Edge Lab Gateway.\\n1. Select Business Lifecycle\\n2. Check Specific Registration Fees"
-    elif user_input == "1":
-        response = "CON Choose Lifecycle Stage:\\n1. Idea Stage\\n2. Startup Stage"
-    else:
-        response = "END Session ended."
-        
-    return Response(content=response, media_type="text/plain")
-            """, language="python")
+    with cms_tab1:
+        with st.form("cms_gov_form", clear_on_submit=True):
+            st.markdown("### Publish Statutory Opportunity Profile Card")
+            g_title = st.text_input("Program Opportunity Name:")
+            g_agency = st.text_input("Managing Agency/Ministry:")
+            g_stage = st.selectbox("Target Business Stage:", STAGES,
