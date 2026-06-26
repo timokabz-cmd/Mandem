@@ -1,17 +1,17 @@
 import streamlit as st
-
-st.title("🔒 Session Concluded")
-st.info("The evaluation period for this sandbox prototype has ended. Thank you for your time!")
-st.stop()
-import streamlit as st
 import pandas as pd
 
-# 1. Page Configuration
+# 1. Page Configuration (MUST BE ABSOLUTE FIRST)
 st.set_page_config(
-    page_title="Edge Lab Platform",
+    page_title="Session Concluded",
     page_icon="🇺🇬",
     layout="wide"
 )
+
+# 2. INSTANT ACCESS BLOCK (Stops the app right here)
+st.title("🔒 Session Concluded")
+st.info("The evaluation period for this sandbox prototype has ended. Thank you for your time!")
+st.stop()
 
 # 2. Master Database Initialization (With robust fallback keys)
 if "gov_db" not in st.session_state:
