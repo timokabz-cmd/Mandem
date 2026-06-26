@@ -1,4 +1,9 @@
 import streamlit as st
+
+st.title("🔒 Session Concluded")
+st.info("The evaluation period for this sandbox prototype has ended. Thank you for your time!")
+st.stop()
+import streamlit as st
 import pandas as pd
 
 # 1. Page Configuration
