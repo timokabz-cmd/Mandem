@@ -343,4 +343,79 @@ elif view == "🏛️ Government Admin CMS Portal":
             st.markdown("### Publish Statutory Opportunity Profile Card")
             g_title = st.text_input("Program Opportunity Name:")
             g_agency = st.text_input("Managing Agency/Ministry:")
-            g_stage = st.selectbox("Target Business Stage:", STAGES,
+            g_stage = st.selectbox("Target Business Stage:", STAGES, key="g_stage")
+            g_sector = st.selectbox("Target Sector Taxonomy:", SECTORS, key="g_sector")
+            g_eligibility = st.text_area("Who Qualifies?")
+            g_cost = st.text_input("Statutory Processing Cost Baseline:")
+            g_steps = st.text_area("Step-by-Step Milestones:")
+            g_contacts = st.text_input("Direct Desk Contact Point:")
+            
+            if st.form_submit_button("🚀 Deploy to Government Registry"):
+                st.session_state.gov_db.append({"id": str(uuid.uuid4())[:8], "title": g_title, "agency": g_agency, "stage": g_stage, "sector": g_sector, "eligibility": g_eligibility, "cost": g_cost, "steps": g_steps, "contacts": g_contacts})
+                save_json(GOV_DB_FILE, st.session_state.gov_db)
+                st.success("Statutory record live on the network infrastructure!")
+
+    with cms_tab2:
+        with st.form("cms_blueprint_form", clear_on_submit=True):
+            st.markdown("### Document New Business History / Financial Blueprint")
+            st.caption("Translating your active YouTube content, media field logs, and interview transcripts into accessible database formats.")
+            
+            b_title = st.text_input("Business Model Concept Name:", value="Commercial Goat Farming Matrix")
+            b_sector = st.selectbox("Industry Classification:", SECTORS, key="b_sector")
+            b_tier = st.selectbox("Capital Expenditure Tier Setup:", CAPITAL_TIERS)
+            b_capital = st.text_input("Detailed Capital Breakdown (UGX):", value="UGX 14,000,000 (Fencing, breeder stock, medical kits)")
+            b_summary = st.text_area("Operational Summary Framework:", value="Comprehensive layout protocols optimized for breeding high-tier meat crossbreeds in localized semi-intensive setups.")
+            b_fin_lit = st.text_area("Financial Literacy Point & Risk Factor:", value="Always isolate multi-year asset purchases from periodic working capital allocations. Vet your pasture fields before heavy rains to mitigate high seasonal tick exposures.")
+            b_case = st.text_area("Documented Success Case Narrative:", value="Interview log from District Farm Lead who broke even within 18 months via programmatic institutional supply contracts.")
+            b_media = st.text_input("YouTube Production Identifier Link:", value="📺 Video Link: 'It Works. Try It.' — Episode 22")
+
+            if st.form_submit_button("🎬 Publish to Content Knowledge Network"):
+                st.session_state.blueprint_db.append({
+                    "id": str(uuid.uuid4())[:8], "title": b_title, "sector": b_sector, "tier": b_tier,
+                    "capital_required": b_capital, "summary": b_summary, "fin_lit_tip": b_fin_lit,
+                    "success_case": b_case, "media_anchor": b_media
+                })
+                save_json(BLUEPRINT_DB_FILE, st.session_state.blueprint_db)
+                st.success(f"🎉 Success! '{b_title}' has been vectorized into the digital library ecosystem.")
+
+    st.write("---")
+    st.markdown("### 📋 Active Content Registries Summary")
+    exp_gov, exp_bp = st.columns(2)
+    with exp_gov:
+        st.subheader("Official Government Registry")
+        for c in st.session_state.gov_db:
+            with st.expander(f"🏛️ {c.get('title')}"):
+                st.write(c.get("agency"))
+                if st.button("Delete Statutory Entry", key=f"del_g_{c['id']}"):
+                    st.session_state.gov_db = [i for i in st.session_state.gov_db if i["id"] != c["id"]]
+                    save_json(GOV_DB_FILE, st.session_state.gov_db)
+                    st.rerun()
+    with exp_bp:
+        st.subheader("Published Content Blueprints")
+        for b in st.session_state.blueprint_db:
+            with st.expander(f"🎬 {b.get('title')}"):
+                st.write(b.get("capital_required"))
+                if st.button("Delete Content Record", key=f"del_b_{b['id']}"):
+                    st.session_state.blueprint_db = [i for i in st.session_state.blueprint_db if i["id"] != b["id"]]
+                    save_json(BLUEPRINT_DB_FILE, st.session_state.blueprint_db)
+                    st.rerun()
+
+# ==================================================================
+# VIEW 4: GOV INTELLIGENCE DASHBOARD
+# ==================================================================
+elif view == "📊 Gov Intelligence Dashboard":
+    st.title("National MSME Demand Intelligence Matrix")
+    
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Total Platform Hits (WhatsApp + USSD)", "18,490", "+16% this week")
+    col2.metric("Most Searched Concept", "Poultry Setup (5k Birds)", "4,210 unique pings")
+    col3.metric("Video Redirection Click-Throughs", "2,840 views redirected", "68% Engagement Rate")
+
+    st.write("---")
+    st.subheader("Aggregated Analytics Overview")
+    chart_data = pd.DataFrame({
+        'Agribusiness Blueprints': [4200, 5100, 3100],
+        'Manufacturing Frameworks': [800, 950, 2100],
+        'Official Gov Grants': [1900, 1200, 4800]
+    }, index=['Western Region', 'Northern Region', 'Central Region (Kampala)'])
+    st.line_chart(chart_data)
