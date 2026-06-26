@@ -277,12 +277,12 @@ if view == "📱 Citizen WhatsApp Simulator":
             if matched:
                 for card in matched:
                     st.write("---")
-                    st.markdown(f"🤖 📄 **OFFICIAL SERVICE CARD: {card['title']}**")
-                    st.markdown(f"* 🏛️ Agency:")
-                    st.markdown(f"* 🎯 Who Qualifies:")
-                    st.markdown(f"* 🛠️ Steps to Take:")
-                    st.markdown(f"* 💰 **Statutory Cost:** `{card['cost']}`")
-                    st.markdown(f"* 📞 Support Desk:")
+                    st.markdown(f"🤖 📄 **OFFICIAL SERVICE CARD: {card.get('title', 'N/A')}**")
+                    st.markdown(f"* 🏛️ **Agency:** {card.get('agency', 'N/A')}")
+                    st.markdown(f"* 🎯 **Who Qualifies:** {card.get('eligibility', 'N/A')}")
+                    st.markdown(f"* 🛠️ **Steps to Take:** {card.get('steps', 'N/A')}")
+                    st.markdown(f"* 💰 **Statutory Cost:** `{card.get('cost', 'N/A')}`")
+                    st.markdown(f"* 📞 **Support Desk:** {card.get('contacts', 'N/A')}")
 
                     st.write("---")
                     st.caption("👉 *Did this official information help you today?*")
@@ -399,7 +399,7 @@ elif view == "📟 Citizen USSD Simulator":
                             if matched:
                                 out_str = f"END Matches Found for {selected_stage}:\n"
                                 for item in matched[:2]: 
-                                    out_str += f"- {item['title']}\nCost: {item['cost']}\n"
+                                    out_str += f"- {item.get('title', 'N/A')}\nCost: {item.get('cost', 'N/A')}\n"
                                 st.code(out_str, language="text")
                             else:
                                 st.code(f"END No active programs registered under {selected_stage} - {selected_sector} yet.", language="text")
@@ -458,12 +458,14 @@ elif view == "🏛️ Government Admin CMS Portal":
     st.markdown("### 📋 Currently Published Cards")
     if st.session_state.gov_db:
         for card in st.session_state.gov_db:
-            with st.expander(f"{card['title']} — {card['stage']} / {card['sector']}"):
-                st.write(f"Agency:")
-                st.write(f"Who Qualifies:")
-                st.write(f"Steps:")
-                st.write(f"Cost:")
-                st.write(f"Contact:")
+            with st.expander(f"{card.get('title', 'N/A')} — {card.get('stage', 'N/A')} / {card.get('sector', 'N/A')}"):
+                st.markdown(f"**🏛️ Agency:** {card.get('agency', '⚠️ Field Missing - Overwrite by resetting data')}")
+                st.markdown(f"**🎯 Who Qualifies:** {card.get('eligibility', '⚠️ Field Missing - Overwrite by resetting data')}")
+                st.markdown(f"**🛠️ Steps:** {card.get('steps', '⚠️ Field Missing - Overwrite by resetting data')}")
+                st.markdown(f"**💰 Cost:** `{card.get('cost', '⚠️ Field Missing - Overwrite by resetting data')}`")
+                st.markdown(f"**📞 Contact:** {card.get('contacts', '⚠️ Field Missing - Overwrite by resetting data')}")
+                
+                st.write("")
                 if st.button("🗑️ Delete this card", key=f"del_{card['id']}"):
                     st.session_state.gov_db = [c for c in st.session_state.gov_db if c["id"] != card["id"]]
                     save_db(st.session_state.gov_db)
