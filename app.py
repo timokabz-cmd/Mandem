@@ -1,146 +1,174 @@
 import streamlit as st
 import pandas as pd
-import random
 
-# App Config
-st.set_page_config(page_title="Edge Lab Platform", page_icon="🇺🇬", layout="wide")
+# 1. Page Configuration
+st.set_page_config(
+    page_title="Uganda Business Opportunity Gateway",
+    page_icon="🇺🇬",
+    layout="wide"
+)
 
-# Mock Database for Uganda Knowledge Layer
-KNOWLEDGE_BASE = {
-    "Idea Stage": {
-        "Agriculture & Agribusiness": {
-            "title": "PDM Agriculture Value Chain Support",
-            "eligibility": "Subsistence households, women (30%), youth (30%) organized in Parish SACCOs.",
-            "steps": "1. Register with your local LC1 Chair.\n2. Join a verified Parish Enterprise Group.\n3. Apply via the Parish Development Management Information System (PBMIS).",
-            "cost": "Free",
-            "agency": "Ministry of Local Government / PDM Secretariat"
+# 2. Initialize the Dynamic Database in Memory (Simulating an external DB)
+if "gov_db" not in st.session_state:
+    st.session_state.gov_db = [
+        {
+            "title": "Parish Agricultural Value Chain Grant Support",
+            "agency": "Ministry of Local Government / PDM Secretariat",
+            "stage": "Idea Stage",
+            "sector": "Agriculture & Agribusiness",
+            "eligibility": "Subsistence households organized in a registered Parish Enterprise Group (PEG). 30% reserved for Youth.",
+            "cost": "Free (Zero statutory charges)",
+            "steps": "1. Verify household status with LC1 Chair.\n2. Join a Parish Enterprise Group.\n3. Submit profile to the Parish Development Committee.",
+            "contacts": "PDM Desk Officer at Sub-County level"
         },
-        "Trade & Retail": {
-            "title": "Micro-Retail Registration Pathways",
-            "eligibility": "Sole proprietors, local informal kiosk owners.",
-            "steps": "1. Choose 3 unique business names.\n2. Submit name reservation on the URSB OBRS portal.",
-            "cost": "UGX 25,000 for name reservation",
-            "agency": "URSB"
+        {
+            "title": "URSB Online Business Name Registration",
+            "agency": "Uganda Registration Services Bureau",
+            "stage": "Startup Stage",
+            "sector": "Trade & Retail",
+            "eligibility": "Any Ugandan citizen aged 18+ with a valid National ID (NIN).",
+            "cost": "UGX 80,000 Total",
+            "steps": "1. Log into URSB OBRS portal.\n2. Run a name availability search.\n3. Complete digitized Form 3 and pay via Mobile Money.",
+            "contacts": "URSB Help Desk: 0800 100 006"
         }
-    },
-    "Startup Stage": {
-        "Agriculture & Agribusiness": {
-            "title": "URSB Business Name Registration",
-            "eligibility": "Any Ugandan citizen aged 18+ with a valid National ID.",
-            "steps": "1. Access the URSB Online Business Registration System (OBRS).\n2. Upload National ID.\n3. Pay statutory fees via Mobile Money.",
-            "cost": "UGX 80,000+",
-            "agency": "URSB"
-        },
-        "Trade & Retail": {
-            "title": "URA TIN Acquisition",
-            "eligibility": "Registered business name or company owners.",
-            "steps": "1. Log into URA web portal.\n2. Submit URSB registration number.\n3. Complete self-assessment for presumptive tax thresholds.",
-            "cost": "Free",
-            "agency": "Uganda Revenue Authority"
-        }
-    }
-}
+    ]
 
-# --- SIDEBAR NAVIGATION ---
-st.sidebar.title("🇺🇬 EDGE LAB PLATFORM")
-st.sidebar.markdown("*National MSME & Youth Opportunity Knowledge Infrastructure*")
-st.sidebar.write("---")
-view_mode = st.sidebar.radio("Select Interface View:", ["📱 Citizen WhatsApp Simulator", "📊 Gov Intelligence Dashboard"])
+# Initialize Feedback Log
+if "feedback_log" not in st.session_state:
+    st.session_state.feedback_log = []
 
-# --- VIEW 1: CITIZEN WHATSAPP SIMULATOR ---
-if view_mode == "📱 Citizen WhatsApp Simulator":
-    st.title("WhatsApp-First Prototype Flow")
-    st.info("💡 Simulated View: This represents the logic executing behind a user's WhatsApp interface via QR Code check-in at an LC1 Office.")
+# 3. App Header & Trust Banner
+st.title("🇺🇬 Uganda Business Opportunity Gateway")
+st.caption("National MSME Knowledge Infrastructure Layer • Partnered with URSB, URA, and PDM")
+st.write("---")
+
+# 4. Main Navigation Layers
+app_layer = st.sidebar.radio(
+    "Choose Platform Layer:",
+    ["📱 Citizen Access Portal", "🏛️ Government Admin CMS Portal", "📊 Policy Analytics Hub"]
+)
+
+# ==========================================
+# LAYER 1: CITIZEN ACCESS PORTAL
+# ==========================================
+if app_layer == "📱 Citizen Access Portal":
+    st.subheader("Layer 1: Multi-Channel Delivery Engine")
     
-    # Simulating session state variables for chat history
-    if "stage" not in st.session_state:
-        st.session_state.stage = "Select Stage"
-    if "sector" not in st.session_state:
-        st.session_state.sector = None
-
-    col1, col2 = st.columns([1, 2])
+    channel = st.radio("Select Last-Mile Interface Channel:", ["WhatsApp Simulator", "USSD Engine (*284*45#)"], horizontal=True)
     
-    with col1:
-        st.subheader("Interactive Menu Options")
+    if channel == "WhatsApp Simulator":
+        col1, col2 = st.columns([1, 2])
         
-        # Step 1: Select Lifecycle Stage
-        stages = ["Select Stage", "Idea Stage", "Startup Stage", "Growth Stage", "Mature MSME Stage"]
-        selected_stage = st.selectbox("WhatsApp Button Send: Choose Your Stage", stages, index=stages.index(st.session_state.stage))
-        
-        if selected_stage != st.session_state.stage:
-            st.session_state.stage = selected_stage
-            st.session_state.sector = None
-            st.rerun()
-
-        # Step 2: Select Sector Taxonomy
-        if st.session_state.stage != "Select Stage":
-            sectors = ["Select Sector", "Agriculture & Agribusiness", "Trade & Retail", "Digital & ICT", "Manufacturing"]
-            selected_sector = st.selectbox("WhatsApp Button Send: Choose Your Sector", sectors)
-            if selected_sector != "Select Sector":
-                st.session_state.sector = selected_sector
-
-    with col2:
-        st.subheader("💬 WhatsApp Screen Emulator")
-        
-        # Base UI block representing phone window
-        with st.container(border=True):
-            st.caption("Incoming from Edge Lab Bot • Active")
-            st.chat_message("assistant").write(f"Welcome to Edge Lab Platform! You scanned the QR code at **LC1 Anchor Office**. Please interact with the options on the left.")
+        with col1:
+            st.markdown("**Step-by-Step Flow Filters**")
+            selected_stage = st.selectbox("Your Business Stage:", ["Idea Stage", "Startup Stage", "Growth Stage"])
+            selected_sector = st.selectbox("Your Economic Sector:", ["Agriculture & Agribusiness", "Trade & Retail", "Digital & ICT"])
             
-            if st.session_state.stage != "Select Stage":
-                st.chat_message("user").write(f"I chose: *{st.session_state.stage}*")
+        with col2:
+            st.write("💬 **WhatsApp Active Session Screen**")
+            with st.container(border=True):
+                st.caption("Edge Lab Gateway • Verified Account")
+                st.write(f"Hello! You are browsing in English. Let's find opportunities for your profile.")
                 
-                if st.session_state.sector:
-                    st.chat_message("user").write(f"My sector is: *{st.session_state.sector}*")
-                    
-                    # Fetch card data
-                    card = KNOWLEDGE_BASE.get(st.session_state.stage, {}).get(st.session_state.sector, None)
-                    
-                    if card:
-                        st.chat_message("assistant").markdown(f"""
-                        **📄 SERVICE CARD: {card['title']}**
-                        
-                        *🏛️ Managing Agency:* {card['agency']}
-                        
-                        *🎯 Who Qualifies:* {card['eligibility']}
-                        
-                        *🛠️ Step-by-Step Process:*
-                        {card['steps']}
-                        
-                        *💰 Total Estimated Cost:* `{card['cost']}`
-                        
+                # Filter our database dynamically based on selection
+                matched_cards = [card for card in st.session_state.gov_db if card["stage"] == selected_stage and card["sector"] == selected_sector]
+                
+                if matched_cards:
+                    for card in matched_cards:
+                        st.markdown(f"""
                         ---
-                        *Reply 'HELP' to speak with an assistant or '0' to return to Main Menu.*
+                        📄 **OFFICIAL SERVICE CARD: {card['title']}**
+                        * 🏛️ Agency:
+                        * 🎯 Who Qualifies:
+                        * 🛠️ Steps to Take:
+                        * 💰 **Statutory Cost:** `{card['cost']}`
+                        * 📞 Support Desk:
                         """)
-                    else:
-                        st.chat_message("assistant").write("⚠️ No localized service card is available for this combination yet. Content pipeline active.")
+                        
+                        # --- MENTOR'S FEEDBACK LOOP ENGINE ---
+                        st.write("---")
+                        st.caption("👉 **Did this official information help you today?**")
+                        f_col1, f_col2 = st.columns(2)
+                        if f_col1.button("👍 Yes, clear steps"):
+                            st.session_state.feedback_log.append({"Program": card['title'], "Status": "Helpful"})
+                            st.success("Thank you for your feedback! Data sent to Ministry planners.")
+                        if f_col2.button("👎 No, still confusing"):
+                            st.session_state.feedback_log.append({"Program": card['title'], "Status": "Confusing/Stuck"})
+                            st.error("Feedback logged. Content optimization queue updated.")
+                else:
+                    st.warning("🤖 No active program matches this selection yet. Try choosing 'Idea Stage' + 'Agriculture' or 'Startup Stage' + 'Trade'.")
 
-# --- VIEW 2: GOVERNMENT INTELLIGENCE LAYER ---
-elif view_mode == "📊 Gov Intelligence Dashboard":
-    st.title("National MSME Demand Intelligence Matrix")
-    st.markdown("Anonymized, real-time demand insights collected from WhatsApp routing systems.")
+    elif channel == "USSD Engine (*284*45#)":
+        st.info("📟 Simulating a low-data feature phone network connection:")
+        st.code("""
+        Gateway Main Menu:
+        1. Find Programs by Stage
+        2. Help Hotline Details
+        
+        Reply: 1
+        
+        Select Stage:
+        1. Idea Stage
+        2. Startup Stage
+        
+        Reply: 2
+        
+        URSB Business Card:
+        Cost: UGX 80,000. Text '1' to receive step-by-step SMS guide.
+        """, language="text")
+
+# ==========================================
+# LAYER 2: GOVERNMENT ADMIN CMS PORTAL
+# ==========================================
+elif app_layer == "🏛️ Government Admin CMS Portal":
+    st.subheader("Layer 2: Decentralized Content Management System")
+    st.write("This allows verified Ministry Officers to update fees or upload new opportunities without touching code.")
     
-    # Mock Data Matrix
-    metrics_col1, metrics_col2, metrics_col3 = st.columns(3)
-    metrics_col1.metric("Total Scans via LC1 QR Blocks", "14,250", "+12% this week")
-    metrics_col2.metric("Active WhatsApp Flows", "8,940", "84% Completion Rate")
-    metrics_col3.metric("Highest Bottleneck Point", "URA Tax ID Setup", "Average 4.2 days dropoff")
+    with st.form("cms_form", clear_on_submit=True):
+        st.markdown("### Create / Update an Official Opportunity Card")
+        new_title = st.text_input("Program/Opportunity Name:", value="Emyooga Micro-Finance Credit Line")
+        new_agency = st.text_input("Managing Agency/Ministry:", value="Microfinance Support Centre")
+        
+        c1, c2 = st.columns(2)
+        new_stage = c1.selectbox("Target Business Lifecycle Stage:", ["Idea Stage", "Startup Stage", "Growth Stage"])
+        new_sector = c2.selectbox("Target Sector Taxonomy:", ["Agriculture & Agribusiness", "Trade & Retail", "Digital & ICT"])
+        
+        new_eligibility = st.text_area("Who Qualifies?", value="Active members of a specialized district category SACCO (e.g., Boda Boda operators, tailors).")
+        new_cost = st.text_input("Statutory Fee Required:", value="Free to join. Savings equity minimum applies.")
+        new_steps = st.text_area("Step-by-Step Application Milestones:", value="1. Join your local category SACCO.\n2. Submit development business plan to the District Commercial Officer.\n3. Vetting and fund distribution via commercial banks.")
+        new_contacts = st.text_input("Direct Officer Contact/Desk:", value="District Commercial Officer at your Local District HQ")
+        
+        submit_btn = st.form_submit_button("🚀 Publish to National Gateway")
+        
+        if submit_btn:
+            # Append new record directly to our live in-memory database array
+            new_record = {
+                "title": new_title,
+                "agency": new_agency,
+                "stage": new_stage,
+                "sector": new_sector,
+                "eligibility": new_eligibility,
+                "cost": new_cost,
+                "steps": new_steps,
+                "contacts": new_contacts
+            }
+            st.session_state.gov_db.append(new_record)
+            st.success(f"🎉 Success! '{new_title}' is now live on the citizen system. Switch to the 'Citizen Access Portal' tab to test it!")
+
+# ==========================================
+# LAYER 3: POLICY ANALYTICS HUB
+# ==========================================
+elif app_layer == "📊 Policy Analytics Hub":
+    st.subheader("Layer 3: Real-Time Policy Telemetry Engine")
+    st.write("Data insights flowing directly from citizen interactions to guide macroeconomic planning updates.")
     
-    st.write("---")
-    st.subheader("Geographic and Sectoral Traffic Densities")
-    
-    # Simulating data insights for policy feedback
-    chart_data = pd.DataFrame({
-        'Sector': ['Agribusiness', 'Retail & Trade', 'Logistics', 'ICT', 'Manufacturing'],
-        'Central Region (Kampala/Wakiso)': [2300, 4100, 1200, 1900, 800],
-        'Northern Region (Gulu/Lira)': [4500, 1100, 300, 200, 400],
-        'Western Region (Mbarara/Hoima)': [3900, 1800, 600, 400, 700]
-    })
-    
-    st.bar_chart(chart_data.set_index('Sector'))
-    
-    with st.expander("🔍 View Policy Formulation Feedback Logs"):
-        st.dataframe(pd.DataFrame([
-            {"Timestamp": "2026-06-25", "District": "Gulu", "Insight": "High baseline dropout rates noted when users encounter the phrase 'URSB OBRS Portal'. Suggesting localized radio show explainer content for URSB registration steps."},
-            {"Timestamp": "2026-06-26", "District": "Mbarara", "Insight": "Agribusiness applications for PDM funding spiking. Ensure regional desks validate physical group setups via LC2 chairs immediately."}
-        ]))
+    st.markdown("### 📈 Live User Feedback Stream")
+    if st.session_state.feedback_log:
+        df = pd.DataFrame(st.session_state.feedback_log)
+        st.dataframe(df, use_container_width=True)
+        
+        # Simple count calculation
+        helpful_count = sum(1 for item in st.session_state.feedback_log if item["Status"] == "Helpful")
+        st.metric("Total Citizen Success Inputs Received", helpful_count, f"{len(st.session_state.feedback_log) - helpful_count} flagged bottlenecks")
+    else:
+        st.info("No feedback metrics gathered yet this session. Go to the Citizen Portal, review a card, and click a Thumbs Up/Down button to populate this dashboard.")
