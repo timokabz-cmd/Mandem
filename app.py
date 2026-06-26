@@ -57,9 +57,20 @@ DEFAULT_DB = [
         "stage": "Startup Stage",
         "sector": "Trade & Retail",
         "eligibility": "Any Ugandan citizen aged 18+ with a valid National ID (NIN).",
-        "cost": "UGX 80,000 Total",
+        "cost": "UGX 80,000 Total (UGX 35,000 name reservation fee + UGX 45,000 assessment fee).",
         "steps": "1. Log into URSB OBRS portal. 2. Run a name availability search. 3. Complete digitized Form 3 and pay via Mobile Money.",
         "contacts": "URSB Help Desk: 0800 100 006"
+    },
+    {
+        "id": "ursb-002",
+        "title": "URSB Limited Liability Company Incorporation",
+        "agency": "Uganda Registration Services Bureau",
+        "stage": "Startup Stage",
+        "sector": "Manufacturing",
+        "eligibility": "Enterprises with a minimum of two directors holding valid Ugandan National IDs (NIN) or foreign passports.",
+        "cost": "UGX 140,000 baseline (UGX 105,000 registration fee if share capital is under UGX 5,000,000 + UGX 35,000 name reservation assessment).",
+        "steps": "1. Reserve company name online via the OBRS portal. 2. Upload digitized copies of the Memorandum and Articles of Association. 3. Complete Form 18 (Situation of Registered Office) and Form 20 (Particulars of Directors) before submitting electronic evaluation.",
+        "contacts": "URSB Bureau Head Office, Kampala / obrs.ursb.go.ug"
     },
     {
         "id": "ura-001",
@@ -90,7 +101,7 @@ DEFAULT_DB = [
         "stage": "Growth Stage",
         "sector": "Trade & Retail",
         "eligibility": "Micro or small enterprises owned by women (minimum 51% shareholding) with a valid trading license and verifiable financial cashflows.",
-        "cost": "Zero application or bank processing fees. Loans are offered at an interest rate cap of 10% per year (less than 1% per month) with amounts ranging between UGX 4 Million and UGX 200 Million.",
+        "cost": "Zero application or bank processing fees. Loans are offered at an interest rate cap of 10%–12% per year with amounts ranging between UGX 4 Million and UGX 200 Million.",
         "steps": "1. Ensure your active business operations match World Bank environmental and social safeguard compliance standards. 2. Hold or open an operational account with an active participating financial institution. 3. Present flexible security alternatives (such as movable household assets, or group/personal guarantees) to finalize drawdowns.",
         "contacts": "GROW Project Secretariat Hub at Private Sector Foundation Uganda (PSFU) or grow@psfu.org.ug"
     },
@@ -106,6 +117,17 @@ DEFAULT_DB = [
         "contacts": "Outbox Uganda / Hi-Innovator Support Desks at info@hi-innovator.ug"
     },
     {
+        "id": "udb-001",
+        "title": "Uganda Development Bank (UDB) SME Kazi Loan",
+        "agency": "Uganda Development Bank",
+        "stage": "Growth Stage",
+        "sector": "Digital & ICT",
+        "eligibility": "Registered Small and Medium Enterprises with an annual turnover between UGX 100 Million and UGX 360 Million.",
+        "cost": "One-time internal processing appraisal fee of 0.75% to 1.00% of the total loan volume. Capital borrowing rates fixed between 10%–12% per annum.",
+        "steps": "1. Obtain an application letter layout using official corporate letterheads. 2. Provide audited accounts covering the past 2 operating years alongside complete bank logs. 3. Submit a formalized business plan outline to unlock disbursements between UGX 50 Million and UGX 720 Million.",
+        "contacts": "UDB Specialized Programs Investment Desk: +256 414 355 550"
+    },
+    {
         "id": "unbs-001",
         "title": "UNBS Small Business Quality Mark Certification",
         "agency": "Uganda National Bureau of Standards",
@@ -115,6 +137,17 @@ DEFAULT_DB = [
         "cost": "UGX 500,000 per year for Micro & Small Enterprises (Per product brand permit issued, plus separate localized laboratory sample testing fees).",
         "steps": "1. Confirm your company tax profile has an active URA TIN. 2. Acquire standard guidelines corresponding to your product category. 3. Apply via the electronic URA portal. 4. Allow factory inspections by compliance auditors and supply batch physical samples for laboratory analysis.",
         "contacts": "UNBS Certification Department Manager / National Standards Council"
+    },
+    {
+        "id": "nema-001",
+        "title": "NEMA Environmental Impact Assessment (ESIA) Clearance",
+        "agency": "National Environment Management Authority",
+        "stage": "Mature MSME Stage",
+        "sector": "Manufacturing",
+        "eligibility": "Commercial facilities or processing plants whose physical infrastructure frameworks might introduce environmental or local community residue changes.",
+        "cost": "UGX 100,000 filing fee paid via the URA framework. Certification costs scale based on specific capital footprint evaluations.",
+        "steps": "1. Contract a certified environmental practitioner registered on NEMA's ELMIS network. 2. Compile an Environmental and Social Impact Assessment study detailing waste metrics. 3. Upload final portfolios to the NEMA portal to secure an official Certificate of Approval.",
+        "contacts": "NEMA Environmental Compliance Registry Desk / finance.revenue@nema.go.ug"
     },
     {
         "id": "ucda-001",
