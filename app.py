@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# 2. Master Database Initialization
+# 2. Master Database Initialization (With robust fallback keys)
 if "gov_db" not in st.session_state:
     st.session_state.gov_db = [
         {
@@ -36,7 +36,7 @@ if "gov_db" not in st.session_state:
 if "feedback_log" not in st.session_state:
     st.session_state.feedback_log = []
 
-# 3. Sidebar Infrastructure Navigation (Matches App Layout Images)
+# 3. Sidebar Navigation & Cache Management
 st.sidebar.markdown("## 🇺🇬 EDGE LAB PLATFORM")
 st.sidebar.caption("National MSME & Youth Opportunity Knowledge Infrastructure")
 st.sidebar.write("---")
@@ -45,6 +45,12 @@ view = st.sidebar.radio(
     "Select Interface View:",
     ["📱 Citizen WhatsApp Simulator", "🏛️ Government Admin CMS Portal", "📊 Gov Intelligence Dashboard"]
 )
+
+st.sidebar.write("---")
+st.sidebar.markdown("### 🛠️ Developer Controls")
+if st.sidebar.button("🔄 Clear Cache & Reset DB"):
+    del st.session_state.gov_db
+    st.rerun()
 
 # ==========================================
 # VIEW 1: CITIZEN WHATSAPP SIMULATOR
@@ -55,7 +61,6 @@ if view == "📱 Citizen WhatsApp Simulator":
     
     st.subheader("Interactive Menu Options")
     
-    # Conditional Filter Dropdowns
     stage_options = ["Select Stage", "Idea Stage", "Startup Stage", "Growth Stage", "Mature MSME Stage"]
     selected_stage = st.selectbox("WhatsApp Button Send: Choose Your Stage", stage_options)
     
@@ -67,7 +72,6 @@ if view == "📱 Citizen WhatsApp Simulator":
     st.write("---")
     st.subheader("💬 WhatsApp Screen Emulator")
     
-    # Message Simulation Feed
     with st.container(border=True):
         st.caption("Incoming from Edge Lab Bot • Active")
         st.write("🤖 **Welcome to Edge Lab Platform!** You scanned the QR code at **LC1 Anchor Office**. Please interact with the options on the left.")
@@ -78,28 +82,36 @@ if view == "📱 Citizen WhatsApp Simulator":
         if selected_sector != "Select Sector":
             st.success(f"🧑 **My sector is:** {selected_sector}")
             
-            # Dynamic DB Query Engine
-            matched = [card for card in st.session_state.gov_db if card["stage"] == selected_stage and card["sector"] == selected_sector]
+            # Filter matches safely
+            matched = [card for card in st.session_state.gov_db if card.get("stage") == selected_stage and card.get("sector") == selected_sector]
             
             if matched:
                 for idx, card in enumerate(matched):
                     st.write("---")
-                    st.markdown(f"🤖 📄 **OFFICIAL SERVICE CARD: {card['title']}**")
-                    st.markdown(f"* 🏛️ Agency:")
-                    st.markdown(f"* 🎯 Who Qualifies:")
-                    st.markdown(f"* 🛠️ Steps to Take:")
-                    st.markdown(f"* 💰 **Statutory Cost:** `{card['cost']}`")
-                    st.markdown(f"* 📞 Support Desk:")
+                    st.markdown(f"🤖 📄 **OFFICIAL SERVICE CARD: {card.get('title', 'Unknown Program')}**")
                     
-                    # Macro Feedback Metric Connection
+                    # Robust multi-key extraction logic to handle old & new structures seamlessly
+                    agency = card.get("agency") or card.get("Managing Agency/Ministry:") or "Information pending ministerial upload"
+                    eligibility = card.get("eligibility") or card.get("Who Qualifies?") or "Information pending validation"
+                    steps = card.get("steps") or card.get("Step-by-Step Application Milestones:") or "Information pending process mapping"
+                    cost = card.get("cost") or card.get("Statutory Fee Required (e.g., UGX 253,250):") or "Free / Standard processing"
+                    contacts = card.get("contacts") or card.get("Direct Officer Contact/Desk:") or "Contact local District Commercial Officer"
+                    
+                    # Render fields with clear markdown visibility
+                    st.markdown(f"* 🏛️ **Agency:** {agency}")
+                    st.markdown(f"* 🎯 **Who Qualifies:** {eligibility}")
+                    st.markdown(f"* 🛠️ **Steps to Take:** {steps}")
+                    st.markdown(f"* 💰 **Statutory Cost:** `{cost}`")
+                    st.markdown(f"* 📞 **Support Desk:** {contacts}")
+                    
                     st.write("---")
                     st.caption("👉 *Did this official information help you today?*")
                     f_col1, f_col2 = st.columns(2)
                     if f_col1.button("👍 Yes, clear steps", key=f"yes_{idx}"):
-                        st.session_state.feedback_log.append({"Program": card['title'], "Status": "Helpful Framework"})
+                        st.session_state.feedback_log.append({"Program": card.get('title'), "Status": "Helpful Framework"})
                         st.success("System routing verification entry saved!")
                     if f_col2.button("👎 No, still confusing", key=f"no_{idx}"):
-                        st.session_state.feedback_log.append({"Program": card['title'], "Status": "Friction Warning"})
+                        st.session_state.feedback_log.append({"Program": card.get('title'), "Status": "Friction Warning"})
                         st.error("Optimization query dispatched to ministry lead.")
             else:
                 st.warning("🤖 No program matches this exact profile permutation yet. Use the CMS portal to instantiate a card layout.")
@@ -127,6 +139,7 @@ elif view == "🏛️ Government Admin CMS Portal":
         submit_btn = st.form_submit_button("🚀 Publish to National Gateway")
         
         if submit_btn:
+            # Saving keys strictly using the streamlined structure matching our display logic
             st.session_state.gov_db.append({
                 "title": new_title,
                 "agency": new_agency,
@@ -146,7 +159,6 @@ elif view == "📊 Gov Intelligence Dashboard":
     st.title("National MSME Demand Intelligence Matrix")
     st.write("Anonymized, real-time demand insights collected from WhatsApp routing systems.")
     
-    # High-level matrix targets matching Image 9 exactly
     col1, col2, col3 = st.columns(3)
     col1.metric("Total Scans via LC1 QR Blocks", "14,250", "+12% this week")
     col2.metric("Active WhatsApp Flows", "8,940", "84% Completion Rate")
@@ -155,7 +167,6 @@ elif view == "📊 Gov Intelligence Dashboard":
     st.write("---")
     st.subheader("Geographic and Sectoral Traffic Densities")
     
-    # Accurate multi-regional analytics layout tracking metrics matching Image 10
     chart_data = pd.DataFrame({
         'Agribusiness': [3900, 4500, 2400],
         'ICT': [400, 200, 1900],
@@ -166,7 +177,6 @@ elif view == "📊 Gov Intelligence Dashboard":
     
     st.bar_chart(chart_data.T)
     
-    # Real-Time Telemetry Log Component
     with st.expander("🔍 View Policy Formulation Feedback Logs"):
         if st.session_state.feedback_log:
             st.dataframe(pd.DataFrame(st.session_state.feedback_log), use_container_width=True)
