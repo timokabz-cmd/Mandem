@@ -40,6 +40,17 @@ DEFAULT_DB = [
         "contacts": "PDM Desk Officer at Sub-County level"
     },
     {
+        "id": "emyooga-001",
+        "title": "Emyooga Specialized Category Seed Capital Access",
+        "agency": "Microfinance Support Centre (MSC)",
+        "stage": "Idea Stage",
+        "sector": "Manufacturing",
+        "eligibility": "Active members of specialized localized enterprise associations (e.g., tailors, mechanics, carpenters) verified at village level via LC1 leadership.",
+        "cost": "One-off membership fee of UGX 10,000 and annual subscription fee of UGX 10,000 to your localized association.",
+        "steps": "1. Form or join an enterprise-specific association at the Parish level with local LC1 endorsement. 2. Merge with at least 5 similar local associations to form a constituency Apex SACCO. 3. Mobilize internal savings and apply for seed capital allocations through MSC distribution windows.",
+        "contacts": "Local District Commercial Officer or nearest MSC Zonal Branch Office"
+    },
+    {
         "id": "ursb-001",
         "title": "URSB Online Business Name Registration",
         "agency": "Uganda Registration Services Bureau",
@@ -49,6 +60,72 @@ DEFAULT_DB = [
         "cost": "UGX 80,000 Total",
         "steps": "1. Log into URSB OBRS portal. 2. Run a name availability search. 3. Complete digitized Form 3 and pay via Mobile Money.",
         "contacts": "URSB Help Desk: 0800 100 006"
+    },
+    {
+        "id": "ura-001",
+        "title": "URA Corporate Tax Identification Number (TIN)",
+        "agency": "Uganda Revenue Authority",
+        "stage": "Startup Stage",
+        "sector": "Trade & Retail",
+        "eligibility": "Every business operating in Uganda, including sole proprietors, partnerships, and companies.",
+        "cost": "Free (Zero registration charges)",
+        "steps": "1. Secure your registration certificate from URSB. 2. Access the URA e-services web portal. 3. Upload director identification cards (NIN) and proof of business premises. 4. Submit electronic form to generate a 10-digit TIN.",
+        "contacts": "URA Customer Care Toll-Free: 0800 117 000"
+    },
+    {
+        "id": "maaif-001",
+        "title": "MAAIF Micro-Scale Irrigation Matching Grant",
+        "agency": "Ministry of Agriculture, Animal Industry, and Fisheries",
+        "stage": "Growth Stage",
+        "sector": "Agriculture & Agribusiness",
+        "eligibility": "Smallholder farmers cultivating between 1 and 2.5 acres of land with a reliable water source situated within 700 meters.",
+        "cost": "Co-financed: Government covers 75% of solar pump costs (up to UGX 7.2 Million). Farmer co-pays the remaining 25% (approx. UGX 2M - 8M per acre).",
+        "steps": "1. Pick up and submit an Expression of Interest (EoI) form at your local District Headquarters. 2. Host the District Production Officer for a technical farm layout audit. 3. Approve system specification and pay your 25% equity contribution to initiate regional procurement.",
+        "contacts": "District Production/Agricultural Officer at local District HQ or UgIFTirrigation@agriculture.go.ug"
+    },
+    {
+        "id": "grow-001",
+        "title": "PSFU GROW Project Women Enterprise Loan Scheme",
+        "agency": "Private Sector Foundation Uganda / MoGLSD",
+        "stage": "Growth Stage",
+        "sector": "Trade & Retail",
+        "eligibility": "Micro or small enterprises owned by women (minimum 51% shareholding) with a valid trading license and verifiable financial cashflows.",
+        "cost": "Zero application or bank processing fees. Loans are offered at an interest rate cap of 10% per year (less than 1% per month) with amounts ranging between UGX 4 Million and UGX 200 Million.",
+        "steps": "1. Ensure your active business operations match World Bank environmental and social safeguard compliance standards. 2. Hold or open an operational account with an active participating financial institution. 3. Present flexible security alternatives (such as movable household assets, or group/personal guarantees) to finalize drawdowns.",
+        "contacts": "GROW Project Secretariat Hub at Private Sector Foundation Uganda (PSFU) or grow@psfu.org.ug"
+    },
+    {
+        "id": "nssf-001",
+        "title": "NSSF Hi-Innovator Seed Funding Accelerator",
+        "agency": "National Social Security Fund & Mastercard Foundation",
+        "stage": "Growth Stage",
+        "sector": "Digital & ICT",
+        "eligibility": "Legally registered multi-founder businesses (minimum 2 co-founders) operational for 2+ years, with a minimum generated baseline revenue of UGX 20 Million.",
+        "cost": "Free to apply (Qualifies recipients for up to UGX 75 Million in catalytic grant/seed funding).",
+        "steps": "1. Create an institutional profile on the Hi-Innovator web portal. 2. Enroll in and complete the foundational self-directed Business Academy course. 3. Participate in standard learning labs. 4. Pitch your operational metrics during an active open funding window.",
+        "contacts": "Outbox Uganda / Hi-Innovator Support Desks at info@hi-innovator.ug"
+    },
+    {
+        "id": "unbs-001",
+        "title": "UNBS Small Business Quality Mark Certification",
+        "agency": "Uganda National Bureau of Standards",
+        "stage": "Mature MSME Stage",
+        "sector": "Manufacturing",
+        "eligibility": "Locally active manufacturing enterprises processing physical retail goods with a valid company URA TIN.",
+        "cost": "UGX 500,000 per year for Micro & Small Enterprises (Per product brand permit issued, plus separate localized laboratory sample testing fees).",
+        "steps": "1. Confirm your company tax profile has an active URA TIN. 2. Acquire standard guidelines corresponding to your product category. 3. Apply via the electronic URA portal. 4. Allow factory inspections by compliance auditors and supply batch physical samples for laboratory analysis.",
+        "contacts": "UNBS Certification Department Manager / National Standards Council"
+    },
+    {
+        "id": "ucda-001",
+        "title": "UCDA Official Coffee Export Marketing Licensing",
+        "agency": "Uganda Coffee Development Authority",
+        "stage": "Mature MSME Stage",
+        "sector": "Agriculture & Agribusiness",
+        "eligibility": "Registered export trading companies processing a robust corporate profile, Memorandum and Articles of Association, and secured access to a certified coffee reprocessing factory.",
+        "cost": "UGX 1.5 Million annual statutory registration fee, coupled with a performance bond equivalent to US$ 25,000 (Non-cash banking instrument format).",
+        "steps": "1. Formulate an applicant profile containing certified shareholder and management setups. 2. Present material proof of access to an active green-coffee reprocessing facility capable of milling standard export grades. 3. Provide the UCDA licensing desk with the executed performance bond documents.",
+        "contacts": "Uganda Coffee Development Authority Licensing and Quality Regulatory Hub, Kampala"
     }
 ]
 
@@ -217,7 +294,7 @@ ANTHROPIC_API_KEY = "sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                 st.write(f"🤖 **Simulated Response for:** *\"{ai_prompt}\"* \n\nI scanned the active database repositories. To qualify for frameworks like the **Parish Agricultural Value Chain Grant**, you must ensure your enterprise group structure has at least a 30% composition allocation explicitly reserved for youth engagement vectors.")
 
 # ==================================================================
-# VIEW 2: CITIZEN USSD SIMULATOR (NEW FUNCTIONAL RUNTIME ADDITION)
+# VIEW 2: CITIZEN USSD SIMULATOR 
 # ==================================================================
 elif view == "📟 Citizen USSD Simulator":
     st.title("USSD Feature-Phone Simulation Layer")
@@ -245,6 +322,7 @@ elif view == "📟 Citizen USSD Simulator":
         * `1` $\rightarrow$ View Business Lifecycle Stages
         * `1*1` $\rightarrow$ Stage 1 (Idea Stage) $\rightarrow$ Displays Sector Selection List
         * `1*1*1` $\rightarrow$ Stage 1 $\rightarrow$ Sector 1 (Agribusiness Opportunities)
+        * `1*3*2` $\rightarrow$ Stage 3 (Growth Stage) $\rightarrow$ Sector 2 (Trade & Retail Opportunities)
         * `2` $\rightarrow$ Structural Taxonomies Overview
         """)
         
@@ -258,7 +336,6 @@ elif view == "📟 Citizen USSD Simulator":
         with st.container(border=True):
             st.caption("Carrier Protocol Stream • Active Session")
             
-            # --- USSD Core State Engine Replication ---
             raw_string = st.session_state.ussd_string
             
             if raw_string == "":
@@ -281,7 +358,6 @@ elif view == "📟 Citizen USSD Simulator":
                         if 0 <= sector_idx < len(SECTORS):
                             selected_sector = SECTORS[sector_idx]
                             
-                            # Filter local persistent state data live
                             matched = [
                                 card for card in st.session_state.gov_db
                                 if card.get("stage") == selected_stage and card.get("sector") == selected_sector
@@ -289,7 +365,7 @@ elif view == "📟 Citizen USSD Simulator":
                             
                             if matched:
                                 out_str = f"END Matches Found for {selected_stage}:\n"
-                                for item in matched[:2]: # Mimic physical character constraint limits on screen
+                                for item in matched[:2]: 
                                     out_str += f"- {item['title']}\nCost: {item['cost']}\n"
                                 st.code(out_str, language="text")
                             else:
