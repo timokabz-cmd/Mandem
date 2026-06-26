@@ -3,7 +3,6 @@ import pandas as pd
 import json
 import os
 import uuid
-from datetime import datetime
 
 # ------------------------------------------------------------------
 # 1. Page Configuration
@@ -18,7 +17,7 @@ st.set_page_config(
 # 2. Shared Taxonomies & Single Sources of Truth
 # ------------------------------------------------------------------
 STAGES = ["Idea Stage", "Startup Stage", "Growth Stage", "Mature MSME Stage"]
-SECTORS = ["Agriculture & Agribusiness", "Trade & Retail", "Digital & ICT", "Manufacturing"]
+SECTORS = ["Agriculture & Agribusiness", "Trade & Retail", "Digital & ICT", "Manufacturing", "Logistics & Transport"]
 CAPITAL_TIERS = ["Micro (Under UGX 5M)", "Small (UGX 5M - 20M)", "Medium/Commercial (UGX 20M+)"]
 
 # ------------------------------------------------------------------
@@ -28,77 +27,132 @@ GOV_DB_FILE = "gov_db.json"
 BLUEPRINT_DB_FILE = "blueprint_db.json"
 FEEDBACK_FILE = "feedback_log.json"
 
-# Master Dataset 1: Official Regulatory & Funding Channels
+# Master Dataset 1: Refined Official Regulatory & Funding Channels
 DEFAULT_GOV_DB = [
     {
-        "id": "peg-001",
+        "id": "gov-pdm-001",
         "title": "Parish Agricultural Value Chain Grant Support",
         "agency": "Ministry of Local Government / PDM Secretariat",
         "stage": "Idea Stage",
         "sector": "Agriculture & Agribusiness",
-        "eligibility": "Subsistence households organized in a registered Parish Enterprise Group (PEG). 30% reserved for Youth.",
-        "cost": "Free (Zero statutory charges)",
-        "steps": "1. Register with your local LC1 Chair. 2. Join a verified Parish Enterprise Group. 3. Apply via the PBMIS portal.",
-        "contacts": "PDM Desk Officer at Sub-County level"
+        "eligibility": "Subsistence households organized inside a registered Parish Enterprise Group (PEG). 30% of entire parish fund allocations strictly reserved for Youth initiatives.",
+        "cost": "Free (Zero statutory application charges across all sub-counties).",
+        "steps": "1. Approach local LC1 Chairperson to verify household status. 2. Join or register a verified 10-30 member Parish Enterprise Group matching specific commodity value chains (e.g., poultry, coffee, dairy). 3. File data into the Parish Development Management Information System (PBMIS) portal via the Parish Chief. 4. Wait for vetting and subsequent direct electronic disbursement from the Parish Revolving Fund account.",
+        "contacts": "Parish Chief / Sub-County PDM Desk Officer."
     },
     {
-        "id": "ursb-002",
-        "title": "URSB Limited Liability Company Incorporation",
-        "agency": "Uganda Registration Services Bureau",
+        "id": "gov-ursb-002",
+        "title": "URSB OBRS Limited Liability Company Incorporation",
+        "agency": "Uganda Registration Services Bureau (URSB)",
         "stage": "Startup Stage",
         "sector": "Manufacturing",
-        "eligibility": "Enterprises with a minimum of two directors holding valid Ugandan National IDs (NIN).",
-        "cost": "UGX 140,000 baseline registration assessment fees.",
-        "steps": "1. Reserve company name online via OBRS portal. 2. Upload digitized Memorandum and Articles of Association. 3. Complete Form 18 and Form 20 parameters.",
-        "contacts": "URSB Bureau Head Office, Kampala / obrs.ursb.go.ug"
+        "eligibility": "Enterprises with a minimum of two directors holding valid Ugandan National Identification Cards (NIDs) with scannable National Identification Numbers (NINs).",
+        "cost": "UGX 140,000 standard baseline statutory registration assessment fees plus registration stamp duty fees.",
+        "steps": "1. Access the online Online Business Registration System (OBRS) portal via obrs.ursb.go.ug. 2. Run a real-time corporate name availability lookup search and reserve your unique name. 3. Input legal profiles for directors, corporate secretaries, and shareholding percentages. 4. Generate and complete standard Form 18 (Application for Registration) and Form 20 (Notice of Appointment of Directors). 5. Upload digitized copies of the Memorandum and Articles of Association. 6. Generate an e-payment PRN token via URA portal and pay via mobile money or commercial bank.",
+        "contacts": "URSB Head Office, Uganda Business Facilitation Centre (UBFC), Plot 1, Kampala Road / obrs.ursb.go.ug"
     },
     {
-        "id": "grow-001",
-        "title": "PSFU GROW Project Women Enterprise Loan Scheme",
-        "agency": "Private Sector Foundation Uganda / MoGLSD",
-        "stage": "Growth Stage",
+        "id": "gov-ura-003",
+        "title": "URA Tax Identification Number (TIN) & Income Tax Compliance",
+        "agency": "Uganda Revenue Authority (URA)",
+        "stage": "Startup Stage",
         "sector": "Trade & Retail",
-        "eligibility": "Micro or small enterprises owned by women (minimum 51% shareholding) with a valid trading license.",
-        "cost": "Zero application fees. Concessionary borrowing rates fixed at 10%-12% per annum.",
-        "steps": "1. Confirm business functions match social safeguard baselines. 2. Present flexible security options to a participating commercial bank partner.",
-        "contacts": "GROW Project Secretariat Hub at PSFU / grow@psfu.org.ug"
+        "eligibility": "Any individual Ugandan business owner (Sole Proprietor) with a valid National ID or any registered corporate legal entity containing a certified URSB registration number.",
+        "cost": "Free (Zero application fees for system issuance).",
+        "steps": "1. Navigate to the official URA web portal at ura.go.ug. 2. Select the 'TIN Registration' interactive module under the e-services drop-down panel. 3. Select business structure type (Individual vs. Non-Individual corporate). 4. Populate matching personal metrics directly corresponding with NIRA database registries. 5. Map physical operating addresses, contact configurations, and business activity category codes. 6. Submit the webform to generate an instant acknowledgement receipt token. 7. Download your digital TIN certificate directly via your verified email address upon backend compliance verification.",
+        "contacts": "URA Toll-Free Support line (0800117000) / Any regional URA Domestic Taxes office."
+    },
+    {
+        "id": "gov-kcca-004",
+        "title": "KCCA Municipal Trading License Acquisition",
+        "agency": "Kampala Capital City Authority / Local Government Municipalities",
+        "stage": "Startup Stage",
+        "sector": "Trade & Retail",
+        "eligibility": "Operating fixed or mobile physical commercial business premises situated within Kampala capital city borders or corresponding municipal zones.",
+        "cost": "Variable scale calculated strictly on business type, sector code, and physical size parameters (Ranges from UGX 70,000 to UGX 500,000+ annually).",
+        "steps": "1. Present certified copies of company incorporation documents or registered business names alongside your active URA TIN certificate. 2. Fill out the physical or online KCCA trading license application sheet. 3. Physical inspection parameters are deployed by a municipal officer to verify operations scope and calculate Grade category classification. 4. A formal assessment note is systematically processed generating a Payment Registration Number (PRN). 5. Complete payment execution. 6. Collect your official trading license sticker placard to avoid municipal enforcement lockups.",
+        "contacts": "KCCA Citizen Service Centers at City Hall or Division Offices (Central, Nakawa, Makindye, Rubaga, Kawempe)."
+    },
+    {
+        "id": "gov-grow-005",
+        "title": "PSFU GROW Project Women Enterprise Loan & Grant Scheme",
+        "agency": "Private Sector Foundation Uganda (PSFU) / MoGLSD",
+        "stage": "Growth Stage",
+        "sector": "Manufacturing",
+        "eligibility": "Micro, Small, or Medium Enterprises (MSMEs) fully owned or majority-controlled by women entrepreneurs (Minimum 51% equity shareholding validation required) possessing an active trading license.",
+        "cost": "Zero evaluation fees. Highly concessionary borrowing loan rates safely fixed at 10% to 12% per annum.",
+        "steps": "1. Contact a participating tier-1 commercial bank partner (e.g., Centenary Bank, Stanbic Bank, DFCU Bank). 2. Present legal identification documentation proving female corporate control benchmarks. 3. Demonstrate ongoing financial operations metrics via physical storefront sales books or digital business ledgers. 4. Match social, environmental, and infrastructure safety framework benchmarks specified by the project management office. 5. Process formal loan application streams for operational capacity scale-ups or physical asset purchases.",
+        "contacts": "GROW Project Secretariat Hub at PSFU House, Plot 43, Nakasero Road / grow@psfu.org.ug"
     }
 ]
 
-# Master Dataset 2: "It Works. Try It." Business Histories & Content Blueprints
+# Master Dataset 2: Expanded "It Works. Try It." Real Ugandan Case Studies with Video Anchors
 DEFAULT_BLUEPRINT_DB = [
     {
-        "id": "bp-poultry-001",
-        "title": "High-Yield Commercial Poultry Blueprint (5,000 Birds)",
+        "id": "bp-retail-001",
+        "title": "Urban General Merchandise Kiosk & Fast-Moving Retail Shop",
+        "sector": "Trade & Retail",
+        "tier": "Micro (Under UGX 5M)",
+        "capital_required": "UGX 1,500,000 - UGX 3,500,000 (Initial fast-moving stock purchase, rent deposit, security grill installations, and counter shelving)",
+        "summary": "An operations blueprint for launching a high-turnover retail kiosk in dense urban neighborhoods. Outlines standard stock selection parameters (sugar, soap, cooking oil, rice) to maximize cash velocity.",
+        "fin_lit_tip": "THE INVENTORY LEAK RAPID FIX: Never consume shop inventory for personal use without documenting it as a cash purchase in your ledger. Micro-retail shops fail primarily because owners blend personal daily living costs directly with store working capital float.",
+        "success_case": "Case Study: Field setup blueprint detailing inventory mapping, supplier negotiations, and daily ledger protocols modeled from successful neighborhood retail startups in Kampala sub-counties.",
+        "media_anchor": "📺 Video Link: https://www.youtube.com/watch?v=zpBsQAwJhQs"
+    },
+    {
+        "id": "bp-ict-002",
+        "title": "Informal Marketplace Digital Transformation Strategy",
+        "sector": "Digital & ICT",
+        "tier": "Micro (Under UGX 5M)",
+        "capital_required": "UGX 800,000 - UGX 2,000,000 (Smart mobile handset, high-speed data allocation packages, and foundational e-commerce store onboarding registries)",
+        "summary": "Step-by-step roadmap showing how informal market vendors and small-scale retailers systematically digitalize their product inventories, capture visual media logs, and fulfill orders through localized courier pipelines.",
+        "fin_lit_tip": "VIRTUAL OVERHEAD RESTRICTION: Do not rent a premium physical storefront if you are testing a new product line. Use localized third-party pick-up points and direct-to-consumer social sales configurations to preserve early operational working capital.",
+        "success_case": "Case Study: The UNDP Uganda & Jumia Strategic Partnership Ecosystem. A documented joint initiative that successfully transitioned hundreds of traditional market vendor structures into active, digitally visible e-commerce operators.",
+        "media_anchor": "📺 Video Link: https://www.youtube.com/watch?v=8tE1I3UmanU"
+    },
+    {
+        "id": "bp-rabbit-003",
+        "title": "Commercial Rabbit Breeding & Agribusiness Enterprise",
+        "sector": "Agriculture & Agribusiness",
+        "tier": "Small (UGX 5M - 20M)",
+        "capital_required": "UGX 5,000,000 - UGX 8,500,000 (Multi-tier breeder cages, high-yield parent stock, and specialized feed rations)",
+        "summary": "Strategic blueprint for shifting from subsistence backyards to high-yield micro-livestock commercialization. Covers structural cage airflow mapping, litter waste recycling, and rapid breeding cycle execution.",
+        "fin_lit_tip": "ASSET RE-INVESTMENT METRIC: Rabbits possess an accelerated breeding cycle. Do not spend initial batch revenues on personal costs. Reinvest 60% of early profits into constructing self-contained weaning cages to safely separate litters and combat high stress-induced kit mortalities.",
+        "success_case": "Case Study: Swiney Tumwebaze (Mommy Rabbits Farm in Kawanda). Resigned from her professional CPA and corporate banking career to build an independent, thriving wealth engine through commercial rabbit cultivation.",
+        "media_anchor": "📺 Video Link: https://www.youtube.com/watch?v=OkOejjimSNk"
+    },
+    {
+        "id": "bp-log-004",
+        "title": "Local Transport Logistics & Digital Dispatch Fleet Operation",
+        "sector": "Logistics & Transport",
+        "tier": "Small (UGX 5M - 20M)",
+        "capital_required": "UGX 6,000,000 - UGX 15,000,000 (Asset acquisition of low-emission commuter motorcycles, digital GPS tracker implementation, and rider safety kits)",
+        "summary": "Operational strategy matrix for running hyper-efficient commuter and parcel transport routes using regional digital aggregators and smart fleet tracking systems to eliminate unauthorized rider operational leakages.",
+        "fin_lit_tip": "DEPRECIATION RECOVERY RESERVES: Set aside a fixed daily amortization rate from route revenues strictly into a locked digital wallet asset. Never treat gross operator remittances as spendable profit before factoring in structural parts wear and routine mechanical service intervals.",
+        "success_case": "Case Study: Ronald Hakiza (Founder, Uga Bus) along with tech pioneers featured on The Ugandan Podcast detailing how local logistics solutions are built using grit, collaboration, and deep-dive community mapping.",
+        "media_anchor": "📺 Video Link: https://www.youtube.com/watch?v=oK7mOWWUCFE"
+    },
+    {
+        "id": "bp-poultry-005",
+        "title": "Commercial Hass Avocado & Layers Poultry Integration",
         "sector": "Agriculture & Agribusiness",
         "tier": "Medium/Commercial (UGX 20M+)",
-        "capital_required": "UGX 35,000,000 - UGX 45,000,000 (Chicks, feed cycle, and structures)",
-        "summary": "Detailed implementation operational guide for scaling a commercial layer poultry unit. Focuses on biosecurity controls, deep-litter housing layout vectors, and high-tier nutritional sourcing metrics.",
-        "fin_lit_tip": "CRITICAL CASHFLOW METRIC: Point-of-lay birds require intensive feed inputs for the first 18-20 weeks before generating single-egg revenues. Maintain a minimum working capital reserve equal to 45% of infrastructure cost exclusively for feed layers.",
-        "success_case": "Case Study: Ronald K. from Wakiso District successfully expanded from 200 birds to 5,500 birds using localized feed formulation techniques.",
-        "media_anchor": "📺 Video Link: 'It Works. Try It.' — Episode 12: Structuring Poultry Run-Rates"
+        "capital_required": "UGX 25,000,000 - UGX 50,000,000 (High-yield grafted Hass seedlings, deep-well irrigation setup, point-of-lay poultry cages, and initial feed arrays)",
+        "summary": "A commercial dual-income agribusiness model combining poultry production with high-value export avocado cultivation. Poultry manure serves as a high-nitrogen organic nutrient base for the orchard, drastically cutting operational fertilizer input expenses.",
+        "fin_lit_tip": "CROP-LIVESTOCK CASH HEDGING: Hass avocado orchards require 3 years to reach peak commercial fruiting yield. Utilize the continuous daily cash-flow generated from your layer poultry egg sales cycles to offset the capital-intensive maintenance overhead of the young orchard.",
+        "success_case": "Case Study: Hon. Esther Mbayo (Luuka District). Transitioned from corporate accounting and high-level national political leadership into commercial agriculture, building a highly profitable multi-acre agribusiness matrix.",
+        "media_anchor": "📺 Video Link: https://www.youtube.com/watch?v=E3bXfS1J4jk"
     },
     {
-        "id": "bp-coffee-001",
-        "title": "Smallholder Arabica/Robusta Coffee Cultivation Roadmap",
-        "sector": "Agriculture & Agribusiness",
-        "tier": "Small (UGX 5M - 20M)",
-        "capital_required": "UGX 6,500,000 (Per acre including land prep, high-yield plantlets, and fertilizer lines)",
-        "summary": "Step-by-step land spacing mapping (3m x 3m for Robusta) optimizing yield metrics per acre. Features integrated intercropping systems with seasonal cash crops to provide immediate short-term farm liquidity.",
-        "fin_lit_tip": "HARVEST CYCLING: Coffee is a long-term economic anchor requiring 2-3 years to mature. Intercrop with beans or matooke during seasons 1 and 2 to absorb maintenance cash-burn until your primary harvest windows open.",
-        "success_case": "Case Study: Nabakooza Mary in Masaka managed to self-fund her processing huller equipment using high-density organic intercropping returns.",
-        "media_anchor": "📺 Video Link: 'It Works. Try It.' — Episode 08: Intercropping Cash Extraction Strategies"
-    },
-    {
-        "id": "bp-bakery-001",
-        "title": "Urban Specialized Bakery & Pastry Setup",
+        "id": "bp-bakery-006",
+        "title": "Commercial Cake Factory & Industrial Bakery Scaling",
         "sector": "Manufacturing",
-        "tier": "Small (UGX 5M - 20M)",
-        "capital_required": "UGX 12,000,000 (Commercial deck oven, high-capacity mixer, and premises retrofitting)",
-        "summary": "A startup production template detailing daily raw material handling, local government health certification guidelines, and decentralized distributions targeting corner retail stores.",
-        "fin_lit_tip": "ASSET DEPRECIATION CONTROL: Prioritize high-quality locally fabricated stainless steel tables but invest heavily in a standard imported deck oven with predictable heat regulation parameters to eliminate batch spoilage.",
-        "success_case": "Case Study: Edge Bakery Project started with a single domestic home oven in Kamwokya and now supplies 14 retail shops across Kampala central.",
-        "media_anchor": "📺 Video Link: 'It Works. Try It.' — Episode 19: Bakery Unit Economics Demystified"
+        "tier": "Medium/Commercial (UGX 20M+)",
+        "capital_required": "UGX 20,000,000+ (Industrial deck ovens, heavy-duty mixers, workspace sanitization buildouts, and retail distribution points)",
+        "summary": "Scaling roadmap transforming a domestic kitchen side-hustle into a multi-outlet national brand. Focuses on maintaining product integrity, acquiring institutional market linkages, and training specialized culinary labor.",
+        "fin_lit_tip": "CAPITAL STACKING & GRANTS: When operating a highly formal production unit, register your payroll and keep strict financial books. Clean administrative records unlock major concessionary capital streams, such as the World Bank-funded GROW project grants for women-led enterprises.",
+        "success_case": "Case Study: Brenda Sekabembe Mulema (CEO, Bake 4 Me Ltd). Scaled her enterprise from a micro-kitchen into a dominant national brand with dozens of employees, earning the National Award for Women Empowerment directly from the President of Uganda.",
+        "media_anchor": "📺 Video Link: https://www.youtube.com/watch?v=e0mqTJNQxUc"
     }
 ]
 
@@ -169,7 +223,7 @@ if view == "📱 Citizen WhatsApp Simulator":
             selected_stage = st.selectbox("Choose Your Current Lifecycle Stage:", ["Select Stage"] + STAGES)
             selected_sector = st.selectbox("Choose Your Target Sector:", ["Select Sector"] + SECTORS) if selected_stage != "Select Stage" else "Select Sector"
         with col_nav2:
-            gov_search = st.text_input("🔍 Quick Keyword Search (e.g., 'URSB', 'Grant'):", value="")
+            gov_search = st.text_input("🔍 Quick Keyword Search (e.g., 'URSB', 'Grant', 'URA', 'KCCA'):", value="")
 
         with st.container(border=True):
             st.caption("Incoming from Edge Lab Bot • Regulatory Portal")
@@ -188,6 +242,7 @@ if view == "📱 Citizen WhatsApp Simulator":
                     st.markdown(f"* **Qualifications:** {card.get('eligibility')}")
                     st.markdown(f"* **Execution Steps:** {card.get('steps')}")
                     st.markdown(f"* **Statutory Fee:** `{card.get('cost')}`")
+                    st.markdown(f"* **Direct Contact Point:** *{card.get('contacts')}*")
                     st.write("---")
             else:
                 st.caption("Adjust your structural filters above to display official ministry compliance options.")
@@ -198,7 +253,7 @@ if view == "📱 Citizen WhatsApp Simulator":
             selected_bp_sector = st.selectbox("Filter Blueprints by Industry Sector:", ["Select Sector"] + SECTORS)
             selected_bp_tier = st.selectbox("Filter by Initial Capital Tier Budget:", ["Select Tier"] + CAPITAL_TIERS) if selected_bp_sector != "Select Sector" else "Select Tier"
         with col_bp2:
-            bp_search = st.text_input("🔍 Search Concepts (e.g., 'Poultry', 'Coffee', 'Bakery'):", value="")
+            bp_search = st.text_input("🔍 Search Concepts (e.g., 'Poultry', 'Rabbit', 'Cake', 'Logistics', 'Marketplace'):", value="")
 
         with st.container(border=True):
             st.caption("Incoming from Edge Lab Bot • Knowledge & Financial Literacy Stream")
@@ -221,7 +276,7 @@ if view == "📱 Citizen WhatsApp Simulator":
                     st.info(bp.get("fin_lit_tip"))
                     st.markdown("🏆 **Field Proof Verification:**")
                     st.success(bp.get("success_case"))
-                    st.markdown(f"🔗 **Production Media Anchor:** \n`{bp.get('media_anchor')}`")
+                    st.markdown(f"🔗 **Production Media Anchor:** \n{bp.get('media_anchor')}")
                     st.write("---")
             else:
                 st.warning("🤖 Select an industry sector and capital tier budget or type a keyword search pattern to inspect our interactive 'It Works. Try It.' production summaries.")
@@ -233,20 +288,19 @@ if view == "📱 Citizen WhatsApp Simulator":
     st.markdown("### 🤖 Edge Lab Conversational AI Copilot (Dual-Synthesis Engine)")
     st.caption("Simulated Context-Aware LLM Endpoint — Programmatically cross-referencing Official Policy with Real-World Field Blueprints.")
     
-    ai_prompt = st.text_input("Ask any unstructured business question (e.g., 'I want to start a poultry farm, how do I get funding and survive the first months?'):")
+    ai_prompt = st.text_input("Ask any unstructured business question (e.g., 'I want to start a rabbit farm, how do I get funding and register my company?'):")
     
     if ai_prompt:
         q_lower = ai_prompt.lower()
         
         # Internal search simulation across both engines
-        copied_gov = [c for c in st.session_state.gov_db if any(w in c.get("title","").lower() or c.get("sector","").lower() for w in q_lower.split())]
-        copied_bp = [b for b in st.session_state.blueprint_db if any(w in b.get("title","").lower() or b.get("summary","").lower() for w in q_lower.split())]
+        copied_gov = [c for c in st.session_state.gov_db if any(w in c.get("title","").lower() or c.get("sector","").lower() or c.get("agency","").lower() for w in q_lower.split())]
+        copied_bp = [b for b in st.session_state.blueprint_db if any(w in b.get("title","").lower() or b.get("summary","").lower() or b.get("success_case","").lower() for w in q_lower.split())]
         
         with st.chat_message("assistant"):
             st.markdown("#### 🤖 Edge Lab Integrated Synthesis Response")
             st.write("I have analyzed your query and generated a strategy map combining official national entry channels with practical economic execution blueprints:")
             
-            # Column layout for dual response display
             syn_col1, syn_col2 = st.columns(2)
             
             with syn_col1:
@@ -269,7 +323,7 @@ if view == "📱 Citizen WhatsApp Simulator":
                         st.markdown(f"* **Capital Threshold:** `{b.get('capital_required')}`")
                         st.info(f"💡 **Survival Metric:** {b.get('fin_lit_tip')}")
                         st.success(f"🏆 {b.get('success_case')}")
-                        st.markdown(f"🔗 Watch detailed field metrics: `{b.get('media_anchor')}`")
+                        st.markdown(f"🔗 Watch detailed field metrics: {b.get('media_anchor')}")
                 else:
                     st.write("• Maintain a liquid cash cushion equivalent to 40% of setup parameters to absorb initial cyclical cash-burn variations.")
                     st.write("• Document your unit economics via digital cash-flow logs starting from day one of product cycle testing.")
@@ -297,7 +351,8 @@ elif view == "📟 Citizen USSD Simulator":
         * `1` $\rightarrow$ View Programs by Lifecycle Stage
         * `4` $\rightarrow$ **Launch 'It Works. Try It.' Business Blueprints Engine**
         * `4*1` $\rightarrow$ Sector 1 (Agribusiness) $\rightarrow$ Displays available operational lists
-        * `4*1*1` $\rightarrow$ Displays direct cost/financial metrics for **Poultry Farms (5,000 birds)**
+        * `4*1*1` $\rightarrow$ Displays metrics for **Rabbit Farming (Tumwebaze Swiney case)**
+        * `4*5` $\rightarrow$ Sector 5 (Logistics) $\rightarrow$ Displays logistics infrastructure options
         """)
         if st.button("❌ Terminate Current USSD Session"):
             st.session_state.ussd_string = ""
@@ -313,20 +368,20 @@ elif view == "📟 Citizen USSD Simulator":
             elif raw_string == "1":
                 st.code("CON Choose Lifecycle Stage:\n1. Idea Stage\n2. Startup Stage\n3. Growth Stage", language="text")
             elif raw_string == "4":
-                st.code("CON Select Industry Target Sector:\n1. Agribusiness\n2. Trade & Retail\n3. Digital & ICT\n4. Manufacturing", language="text")
+                st.code("CON Select Industry Target Sector:\n1. Agribusiness\n2. Trade & Retail\n3. Digital & ICT\n4. Manufacturing\n5. Logistics & Transport", language="text")
             elif raw_string == "4*1":
-                st.code("CON Agribusiness Content Library:\n1. Poultry Setup (5,000 Birds)\n2. Coffee Cultivation Guide", language="text")
+                st.code("CON Agribusiness Content Library:\n1. Commercial Rabbit Breeding\n2. Avocado & Layers Integration", language="text")
             elif raw_string == "4*1*1":
-                bp = st.session_state.blueprint_db[0] # Poultry
-                st.code(f"END {bp.get('title')}\nCap: {bp.get('capital_required')}\nLit Tip: Maintain 45% capital reserve backstop for feed layer cycles.", language="text")
+                bp = st.session_state.blueprint_db[2] # Rabbit
+                st.code(f"END {bp.get('title')}\nCap: {bp.get('capital_required')}\nLit Tip: Reinvest 60% of early returns into self-contained weaning cages.", language="text")
             elif raw_string == "4*1*2":
-                bp = st.session_state.blueprint_db[1] # Coffee
-                st.code(f"END {bp.get('title')}\nCost: {bp.get('capital_required')}\nTip: Intercrop with short-rotation cash crops seasons 1-2.", language="text")
-            elif raw_string == "4*4":
-                st.code("CON Manufacturing Content Library:\n1. Urban Specialized Bakery Setup", language="text")
-            elif raw_string == "4*4*1":
-                bp = st.session_state.blueprint_db[2] # Bakery
-                st.code(f"END {bp.get('title')}\nCap: {bp.get('capital_required')}\nTip: Use durable local steel tables; source imported deck ovens.", language="text")
+                bp = st.session_state.blueprint_db[4] # Avocado
+                st.code(f"END {bp.get('title')}\nCap: {bp.get('capital_required')}\nLit Tip: Use layer poultry egg revenue to cash-hedge avocado orchard growth.", language="text")
+            elif raw_string == "4*5":
+                st.code("CON Logistics Content Library:\n1. Digital Dispatch Fleet Operations", language="text")
+            elif raw_string == "4*5*1":
+                bp = st.session_state.blueprint_db[3] # Logistics
+                st.code(f"END {bp.get('title')}\nCap: {bp.get('capital_required')}\nLit Tip: Track daily asset depreciation to avoid unmitigated fleet loss.", language="text")
             else:
                 st.code("END Interface exception. Command combination string not mapped. Dial *284# to refresh parameters.", language="text")
 
@@ -367,7 +422,7 @@ elif view == "🏛️ Government Admin CMS Portal":
             b_summary = st.text_area("Operational Summary Framework:", value="Comprehensive layout protocols optimized for breeding high-tier meat crossbreeds in localized semi-intensive setups.")
             b_fin_lit = st.text_area("Financial Literacy Point & Risk Factor:", value="Always isolate multi-year asset purchases from periodic working capital allocations. Vet your pasture fields before heavy rains to mitigate high seasonal tick exposures.")
             b_case = st.text_area("Documented Success Case Narrative:", value="Interview log from District Farm Lead who broke even within 18 months via programmatic institutional supply contracts.")
-            b_media = st.text_input("YouTube Production Identifier Link:", value="📺 Video Link: 'It Works. Try It.' — Episode 22")
+            b_media = st.text_input("YouTube Production Identifier Link:", value="https://www.youtube.com/watch?v=XXXXXX")
 
             if st.form_submit_button("🎬 Publish to Content Knowledge Network"):
                 st.session_state.blueprint_db.append({
@@ -385,7 +440,7 @@ elif view == "🏛️ Government Admin CMS Portal":
         st.subheader("Official Government Registry")
         for c in st.session_state.gov_db:
             with st.expander(f"🏛️ {c.get('title')}"):
-                st.write(c.get("agency"))
+                st.write(f"Agency: {c.get('agency')}")
                 if st.button("Delete Statutory Entry", key=f"del_g_{c['id']}"):
                     st.session_state.gov_db = [i for i in st.session_state.gov_db if i["id"] != c["id"]]
                     save_json(GOV_DB_FILE, st.session_state.gov_db)
@@ -394,7 +449,7 @@ elif view == "🏛️ Government Admin CMS Portal":
         st.subheader("Published Content Blueprints")
         for b in st.session_state.blueprint_db:
             with st.expander(f"🎬 {b.get('title')}"):
-                st.write(b.get("capital_required"))
+                st.write(f"Tier: {b.get('tier')} | Capital: {b.get('capital_required')}")
                 if st.button("Delete Content Record", key=f"del_b_{b['id']}"):
                     st.session_state.blueprint_db = [i for i in st.session_state.blueprint_db if i["id"] != b["id"]]
                     save_json(BLUEPRINT_DB_FILE, st.session_state.blueprint_db)
@@ -407,15 +462,15 @@ elif view == "📊 Gov Intelligence Dashboard":
     st.title("National MSME Demand Intelligence Matrix")
     
     col1, col2, col3 = st.columns(3)
-    col1.metric("Total Platform Hits (WhatsApp + USSD)", "18,490", "+16% this week")
-    col2.metric("Most Searched Concept", "Poultry Setup (5k Birds)", "4,210 unique pings")
-    col3.metric("Video Redirection Click-Throughs", "2,840 views redirected", "68% Engagement Rate")
+    col1.metric("Total Platform Hits (WhatsApp + USSD)", "24,810", "+22% this week")
+    col2.metric("Most Searched Concept", "Rabbit Farming & Agribusiness", "6,140 unique pings")
+    col3.metric("Video Redirection Click-Throughs", "4,950 views redirected", "74% Engagement Rate")
 
     st.write("---")
     st.subheader("Aggregated Analytics Overview")
     chart_data = pd.DataFrame({
-        'Agribusiness Blueprints': [4200, 5100, 3100],
-        'Manufacturing Frameworks': [800, 950, 2100],
-        'Official Gov Grants': [1900, 1200, 4800]
+        'Agribusiness Blueprints': [4200, 5100, 6800],
+        'Logistics & Transport': [1200, 1800, 3400],
+        'Official Gov Compliance Inquiries': [1900, 2400, 5900]
     }, index=['Western Region', 'Northern Region', 'Central Region (Kampala)'])
     st.line_chart(chart_data)
