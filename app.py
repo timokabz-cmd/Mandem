@@ -97,7 +97,12 @@ st.sidebar.write("---")
 
 view = st.sidebar.radio(
     "Select Interface View:",
-    ["📱 Citizen WhatsApp Simulator", "🏛️ Government Admin CMS Portal", "📊 Gov Intelligence Dashboard"]
+    [
+        "📱 Citizen WhatsApp Simulator", 
+        "📟 Citizen USSD Simulator", 
+        "🏛️ Government Admin CMS Portal", 
+        "📊 Gov Intelligence Dashboard"
+    ]
 )
 
 st.sidebar.write("---")
@@ -116,7 +121,6 @@ if view == "📱 Citizen WhatsApp Simulator":
     st.title("WhatsApp-First Prototype Flow")
     st.info("💡 Simulated View: This represents the logic executing behind a user's WhatsApp interface via QR Code check-in at an LC1 Office.")
 
-    # Interactive Filter System Layout
     col_nav1, col_nav2 = st.columns(2)
     
     with col_nav1:
@@ -138,11 +142,9 @@ if view == "📱 Citizen WhatsApp Simulator":
         st.caption("Incoming from Edge Lab Bot • Active")
         st.write("🤖 **Welcome to Edge Lab Platform!** You scanned the QR code at **LC1 Anchor Office**. Please interact with the filter options or type a search query above.")
 
-        # Conditional Logic for Rendering Cards based on Filters OR Search Inputs
         matched = []
         
         if search_query.strip() != "":
-            # Search execution across all data fields
             q = search_query.lower()
             matched = [
                 card for card in st.session_state.gov_db
@@ -161,7 +163,6 @@ if view == "📱 Citizen WhatsApp Simulator":
                     if card.get("stage") == selected_stage and card.get("sector") == selected_sector
                 ]
 
-        # Display matched opportunity data cards
         if (selected_stage != "Select Stage" and selected_sector != "Select Sector") or search_query.strip() != "":
             if matched:
                 for card in matched:
@@ -195,9 +196,6 @@ if view == "📱 Citizen WhatsApp Simulator":
             else:
                 st.warning("🤖 No program matches this exact profile permutation yet. Use the CMS portal to instantiate a card layout.")
 
-        # ------------------------------------------------------------------
-        # NEW ADJACENT ADDITION: Secure AI Assistant Component
-        # ------------------------------------------------------------------
         st.write("---")
         st.markdown("### 🤖 Edge Lab Conversational AI Copilot")
         st.caption("Simulated LLM Sandboxed Environment — Powered securely via encrypted background application context.")
@@ -205,14 +203,10 @@ if view == "📱 Citizen WhatsApp Simulator":
         ai_prompt = st.text_input("Ask an unstructured policy query (e.g., 'How do I start an agricultural venture as a youth group?'):")
         
         if ai_prompt:
-            # Demonstration of how st.secrets isolates production API tokens securely
             if "OPENAI_API_KEY" in st.secrets or "ANTHROPIC_API_KEY" in st.secrets:
                 st.info("✨ Secure API Context Active: Formulating verified, context-aware policy synthesis using live backend data layers...")
-                # Real programmatic LLM API integration structure would load keys implicitly:
-                # client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
                 st.write("🤖 **AI Assistant Synthesis:** Based on active national frameworks, you must first cluster into a registered group at your local sub-county level to access targeted value-chain grant mechanisms.")
             else:
-                # Professional investor-ready secure fallback mode
                 st.warning("🔒 Secure Sandbox Mode Active: Real production LLM tokens are safely isolated via `.streamlit/secrets.toml` variables.")
                 with st.expander("🛠️ View Production Key Architecture Setup"):
                     st.code("""
@@ -223,7 +217,99 @@ ANTHROPIC_API_KEY = "sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                 st.write(f"🤖 **Simulated Response for:** *\"{ai_prompt}\"* \n\nI scanned the active database repositories. To qualify for frameworks like the **Parish Agricultural Value Chain Grant**, you must ensure your enterprise group structure has at least a 30% composition allocation explicitly reserved for youth engagement vectors.")
 
 # ==================================================================
-# VIEW 2: GOVERNMENT ADMIN CMS PORTAL
+# VIEW 2: CITIZEN USSD SIMULATOR (NEW FUNCTIONAL RUNTIME ADDITION)
+# ==================================================================
+elif view == "📟 Citizen USSD Simulator":
+    st.title("USSD Feature-Phone Simulation Layer")
+    st.info("💡 Simulated View: This emulates the offline text interface a citizen sees when dialing a shortcode (e.g., `*284#`) via an Africa's Talking telco aggregator link.")
+    
+    if "ussd_string" not in st.session_state:
+        st.session_state.ussd_string = ""
+
+    col_input, col_screen = st.columns([1, 1])
+    
+    with col_input:
+        st.subheader("Keypad Action Entry")
+        st.write("In production, Africa's Talking forwards text selections as a concatenated string delimited by asterisks (e.g., `1`, `1*2`). Enter your input below:")
+        
+        current_input = st.text_input(
+            "Type your numeric choices (Leave blank to view main menu):", 
+            value=st.session_state.ussd_string,
+            help="Type '1' for Stages, '2' for Sectors, or step sequences like '1*1' for Stage 1 -> Sector 1."
+        )
+        st.session_state.ussd_string = current_input.strip()
+        
+        st.write("#### 🧭 Quick Reference Navigation Strings:")
+        st.markdown("""
+        * Leave Blank / Reset $\rightarrow$ **Main Gateway Menu**
+        * `1` $\rightarrow$ View Business Lifecycle Stages
+        * `1*1` $\rightarrow$ Stage 1 (Idea Stage) $\rightarrow$ Displays Sector Selection List
+        * `1*1*1` $\rightarrow$ Stage 1 $\rightarrow$ Sector 1 (Agribusiness Opportunities)
+        * `2` $\rightarrow$ Structural Taxonomies Overview
+        """)
+        
+        if st.button("❌ Reset/End USSD Call Session"):
+            st.session_state.ussd_string = ""
+            st.rerun()
+
+    with col_screen:
+        st.subheader("📟 Simulated Feature-Phone Screen")
+        
+        with st.container(border=True):
+            st.caption("Carrier Protocol Stream • Active Session")
+            
+            # --- USSD Core State Engine Replication ---
+            raw_string = st.session_state.ussd_string
+            
+            if raw_string == "":
+                st.code("CON Welcome to Edge Lab Gateway.\n1. Find Programs by Stage\n2. View Sector Matrices\n3. About Edge Lab", language="text")
+            
+            elif raw_string == "1":
+                st.code("CON Choose Lifecycle Stage:\n1. Idea Stage\n2. Startup Stage\n3. Growth Stage\n4. Mature MSME Stage", language="text")
+            
+            elif raw_string.startswith("1*"):
+                tokens = raw_string.split("*")
+                stage_idx = int(tokens[1]) - 1 if (len(tokens) > 1 and tokens[1].isdigit()) else -1
+                
+                if 0 <= stage_idx < len(STAGES):
+                    selected_stage = STAGES[stage_idx]
+                    
+                    if len(tokens) == 2:
+                        st.code(f"CON Profile: {selected_stage}\nSelect Target Sector:\n1. Agriculture & Agribusiness\n2. Trade & Retail\n3. Digital & ICT\n4. Manufacturing", language="text")
+                    elif len(tokens) == 3:
+                        sector_idx = int(tokens[2]) - 1 if tokens[2].isdigit() else -1
+                        if 0 <= sector_idx < len(SECTORS):
+                            selected_sector = SECTORS[sector_idx]
+                            
+                            # Filter local persistent state data live
+                            matched = [
+                                card for card in st.session_state.gov_db
+                                if card.get("stage") == selected_stage and card.get("sector") == selected_sector
+                            ]
+                            
+                            if matched:
+                                out_str = f"END Matches Found for {selected_stage}:\n"
+                                for item in matched[:2]: # Mimic physical character constraint limits on screen
+                                    out_str += f"- {item['title']}\nCost: {item['cost']}\n"
+                                st.code(out_str, language="text")
+                            else:
+                                st.code(f"END No active programs registered under {selected_stage} - {selected_sector} yet.", language="text")
+                        else:
+                            st.code("END Error: Invalid sector selected.", language="text")
+                else:
+                    st.code("END Error: Invalid stage choice configuration.", language="text")
+            
+            elif raw_string == "2":
+                st.code("END Active Target Sector Frameworks:\n1. Agribusiness\n2. Trade/Retail\n3. Tech Infrastructure\n4. Heavy Manufacturing", language="text")
+            
+            elif raw_string == "3":
+                st.code("END Edge Lab Platform v1.2\nNational MSME & Youth Opportunity Knowledge Infrastructure.\nKampala, Uganda.", language="text")
+            
+            else:
+                st.code("END Invalid entry pattern. Please hang up and re-dial *284# to flush cache layers.", language="text")
+
+# ==================================================================
+# VIEW 3: GOVERNMENT ADMIN CMS PORTAL
 # ==================================================================
 elif view == "🏛️ Government Admin CMS Portal":
     st.title("Government Admin CMS Portal")
@@ -277,7 +363,7 @@ elif view == "🏛️ Government Admin CMS Portal":
         st.info("No cards published yet.")
 
 # ==================================================================
-# VIEW 3: GOV INTELLIGENCE DASHBOARD
+# VIEW 4: GOV INTELLIGENCE DASHBOARD
 # ==================================================================
 elif view == "📊 Gov Intelligence Dashboard":
     st.title("National MSME Demand Intelligence Matrix")
@@ -310,4 +396,78 @@ elif view == "📊 Gov Intelligence Dashboard":
         else:
             st.info("System streaming operational. Real-time logging metrics will populate here as live inputs are recorded.")
 
-    # ----------------
+    st.write("---")
+    st.subheader("🧱 National Infrastructure Production Blueprint")
+    st.info("🎯 Technical Transparency: This section explicitly maps out how this identical frontend logic transitions to scale in production using distributed microservices.")
+    
+    tab_wa, tab_ussd = st.tabs(["💬 Real WhatsApp Business API Architecture", "📱 USSD Telco Aggregator Integration"])
+    
+    with tab_wa:
+        st.markdown("### Production WhatsApp Webhook Routing Matrix")
+        st.write("Streamlit serves as our centralized internal CMS portal, telemetry engine, and real-time data visualizer. In production, citizen queries do not touch the Streamlit UI—instead, they interact via Meta's infrastructure, which routes JSON webhooks into a lightweight backend microservice.")
+        
+        st.markdown("""
+        ```mermaid
+        [Citizen on WhatsApp] 
+               │  (Sends message/button interaction)
+               ▼
+        [Meta Cloud Infrastructure] 
+               │  (Dispatches HTTPS POST Webhook Event)
+               ▼
+        [Production API Gateway (FastAPI / Flask)] 
+               │  Reads/Parses incoming telephone number & payloads
+               ├──► Queries [gov_db.json / Shared Database Layer] 
+               └──► Streams telemetry counters back to [This Streamlit Intelligence Dashboard]
+        ```
+        """, unsafe_allow_html=True)
+        
+        with st.expander("📦 View Sample Microservice Production Hook Structure (FastAPI)"):
+            st.code("""
+from fastapi import FastAPI, Request, Response
+import requests
+
+app = FastAPI()
+
+@app.post("/webhook")
+async def whatsapp_webhook(request: Request):
+    payload = await request.json()
+    
+    try:
+        whatsapp_id = payload["entry"][0]["changes"][0]["value"]["messages"][0]["from"]
+        message_body = payload["entry"][0]["changes"][0]["value"]["messages"][0]["text"]["body"]
+    except KeyError:
+        pass
+        
+    return Response(status_code=200)
+            """, language="python")
+
+    with tab_ussd:
+        st.markdown("### Production USSD Telecommunications Layout")
+        st.write("To guarantee access for citizens using analog feature phones without data access, the platform integrates with telco aggregators (such as **Africa's Talking**) via standard shortcode handshakes.")
+        
+        st.markdown("""
+        * **Shortcode Protocol:** User dials an assigned string (e.g., `*284#`) on MTN or Airtel networks.
+        * **Aggregator Forwarding:** The telco aggregator captures the string session state parameters and transforms them into standard HTTP form-data parameters (`sessionId`, `phoneNumber`, `text`).
+        * **Dynamic State Engine:** The underlying backend script reads the input string sequence to serve contextual textual menu prompts back to the carrier stream seamlessly.
+        """)
+        
+        with st.expander("📦 View Sample Aggregator Integration Framework"):
+            st.code("""
+# Production USSD Framework endpoint structure 
+@app.post("/ussd")
+async def ussd_gateway(request: Request):
+    form_data = await request.form()
+    
+    session_id = form_data.get("sessionId")
+    phone_number = form_data.get("phoneNumber")
+    user_input = form_data.get("text", "")
+    
+    if user_input == "":
+        response = "CON Welcome to Edge Lab Gateway.\\n1. Select Business Lifecycle\\n2. Check Specific Registration Fees"
+    elif user_input == "1":
+        response = "CON Choose Lifecycle Stage:\\n1. Idea Stage\\n2. Startup Stage"
+    else:
+        response = "END Session ended."
+        
+    return Response(content=response, media_type="text/plain")
+            """, language="python")
