@@ -1,4 +1,27 @@
 import streamlit as st
+
+# ==================================================================
+# 🔒 TEMPORARY SECURITY LOCK
+# ==================================================================
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.title("🔒 Under Maintenance")
+    st.write("This platform prototype is currently locked for updates.")
+    
+    password_input = st.text_input("Enter Access PIN:", type="password")
+    if st.button("Unlock Platform"):
+        if password_input == "2567":  # 👈 Change this to whatever password/PIN you want
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("Access Denied. Invalid PIN.")
+            
+    st.stop()  # 🛑 This completely stops the rest of the script from running!
+# ==================================================================
+
+import streamlit as st
 import pandas as pd
 import json
 import os
