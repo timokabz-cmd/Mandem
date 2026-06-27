@@ -25,6 +25,7 @@ CAPITAL_TIERS = ["Micro (Under UGX 5M)", "Small (UGX 5M - 20M)", "Medium/Commerc
 # ------------------------------------------------------------------
 GOV_DB_FILE = "gov_db.json"
 BLUEPRINT_DB_FILE = "blueprint_db.json"
+MASTERCLASS_DB_FILE = "masterclass_db.json"
 FEEDBACK_FILE = "feedback_log.json"
 
 # Master Dataset 1: Official Regulatory & Funding Channels
@@ -190,6 +191,93 @@ DEFAULT_BLUEPRINT_DB = [
 ]
 
 
+# Master Dataset 3: Financial Literacy Masterclass
+#
+# Organized by TOPIC, not sector — so it's reachable by every business
+# regardless of industry. The same topic appears at multiple stages with
+# different depth (e.g. "Saving" means "build a buffer" at Idea Stage and
+# "diversify reserves" at Mature Stage), matching the brief: stage-appropriate
+# depth on the same underlying theme, not isolated one-off tips. This is
+# general financial-literacy principle, not Uganda-specific institutional
+# fact, so it carries far less fact-check risk than the gov/blueprint data —
+# but any Uganda-specific rate/rule added here later still needs verification.
+DEFAULT_MASTERCLASS_DB = [
+    {"id": "fl-001", "stage": "Idea Stage", "topic": "Saving & Emergency Funds",
+     "summary": "Build your own startup capital deliberately, and keep a small survival buffer separate from it, before you spend anything on the idea.",
+     "action_tip": "Set aside a fixed weekly amount before any business spending starts."},
+    {"id": "fl-002", "stage": "Idea Stage", "topic": "Credit, Loans & Borrowing",
+     "summary": "Avoid borrowing to fund an idea that hasn't been tested yet — debt makes an unproven idea more dangerous, not less.",
+     "action_tip": "List 3 ways to test your idea for under UGX 50,000 before considering any loan."},
+    {"id": "fl-003", "stage": "Idea Stage", "topic": "Budgeting & Cash Flow Management",
+     "summary": "Simple budgeting habits formed now carry through once the business gets busy and harder to track.",
+     "action_tip": "Write down every shilling spent on the idea this week, even the small ones."},
+    {"id": "fl-004", "stage": "Idea Stage", "topic": "Separating Personal and Business Money",
+     "summary": "Start the separation habit early, even with tiny amounts — it's far harder to introduce later once money is already mixed.",
+     "action_tip": "Keep startup capital in a separate envelope or mobile money line from personal spending money, starting today."},
+    {"id": "fl-005", "stage": "Idea Stage", "topic": "Investing & Growing Your Capital",
+     "summary": "Cheap, fast validation is itself a form of smart investing — don't commit all your capital before you know the idea works.",
+     "action_tip": "Identify the smallest, cheapest version of your idea you could test this month."},
+
+    {"id": "fl-006", "stage": "Startup Stage", "topic": "Budgeting & Cash Flow Management",
+     "summary": "A business can look profitable on paper and still fail from running out of cash — watch the cash, not just the profit number.",
+     "action_tip": "Pick one day each week to total income and expenses, no exceptions."},
+    {"id": "fl-007", "stage": "Startup Stage", "topic": "Separating Personal and Business Money",
+     "summary": "Mixing personal and business money is the single most common reason small business owners can't tell if they're actually making money.",
+     "action_tip": "Open a dedicated mobile money line or account for the business this week if you haven't already."},
+    {"id": "fl-008", "stage": "Startup Stage", "topic": "Credit, Loans & Borrowing",
+     "summary": "If you must borrow, make sure the cash flow it funds can realistically repay it — not just the idea behind it.",
+     "action_tip": "Before taking any loan, calculate whether this month's cash flow alone could repay it."},
+    {"id": "fl-009", "stage": "Startup Stage", "topic": "Record-Keeping & Bookkeeping",
+     "summary": "Problems move fast at this stage — tracking daily or weekly catches trouble before it compounds into a crisis.",
+     "action_tip": "Keep a simple notebook or phone note logging every sale and expense, reviewed weekly."},
+    {"id": "fl-010", "stage": "Startup Stage", "topic": "Investing & Growing Your Capital",
+     "summary": "Resist increasing personal spending as soon as the business makes money — reinvest first, pay yourself a fixed modest amount.",
+     "action_tip": "Decide a fixed personal 'salary' from the business and reinvest the rest for now."},
+
+    {"id": "fl-011", "stage": "Growth Stage", "topic": "Investing & Growing Your Capital",
+     "summary": "Growth doesn't always mean expansion — sometimes the highest return comes from fixing margins on what already works.",
+     "action_tip": "Calculate your profit margin per sale before deciding whether to expand or fix pricing/costs first."},
+    {"id": "fl-012", "stage": "Growth Stage", "topic": "Saving & Emergency Funds",
+     "summary": "Build a reserve covering several months of operating costs before committing to expansion spending.",
+     "action_tip": "Calculate 3 months of operating costs and treat that as untouchable before any expansion spend."},
+    {"id": "fl-013", "stage": "Growth Stage", "topic": "Credit, Loans & Borrowing",
+     "summary": "Compare the true cost of a loan or overdraft — interest plus fees plus collateral risk — against what the expansion will actually return.",
+     "action_tip": "Write down the total cost of any loan you're considering, including fees, and compare it to the extra profit the expansion would generate."},
+    {"id": "fl-014", "stage": "Growth Stage", "topic": "Record-Keeping & Bookkeeping",
+     "summary": "Moving from notebook tracking to proper accounting records makes you bankable and makes problems visible early.",
+     "action_tip": "Move from a notebook to a simple spreadsheet or accounting app this month."},
+    {"id": "fl-015", "stage": "Growth Stage", "topic": "Risk, Diversification & Succession",
+     "summary": "At this scale, a second product, customer segment, or location reduces how much a single shock can hurt the business.",
+     "action_tip": "Identify one additional product, customer segment, or location that could reduce reliance on your current single income source."},
+
+    {"id": "fl-016", "stage": "Mature MSME Stage", "topic": "Risk, Diversification & Succession",
+     "summary": "Protecting what you've built becomes as important as growing it — a business that depends entirely on the owner's daily presence isn't actually stable.",
+     "action_tip": "List what would happen to the business if you were unavailable for 3 months — that gap is your succession risk."},
+    {"id": "fl-017", "stage": "Mature MSME Stage", "topic": "Investing & Growing Your Capital",
+     "summary": "Spreading capital across more than one asset type — property, other ventures, savings instruments — reduces the damage from any single failure.",
+     "action_tip": "Review whether all your capital sits inside this one business, and consider where a portion could sit elsewhere."},
+    {"id": "fl-018", "stage": "Mature MSME Stage", "topic": "Tax & Compliance Awareness",
+     "summary": "Legal tax optimization and clean compliance status are what unlock larger concessionary capital and protect the business from penalties.",
+     "action_tip": "Schedule a review with a tax professional to confirm you're using all legal deductions or incentives available to you."},
+    {"id": "fl-019", "stage": "Mature MSME Stage", "topic": "Saving & Emergency Funds",
+     "summary": "Owners who withdraw 100% of profit stall growth; owners who reinvest 100% never personally benefit — find a deliberate, consistent balance.",
+     "action_tip": "Decide a fixed percentage of profit you will withdraw personally vs. reinvest, and stick to it consistently."},
+    {"id": "fl-020", "stage": "Mature MSME Stage", "topic": "Record-Keeping & Bookkeeping",
+     "summary": "Separating ownership from day-to-day management, backed by independent financial review, protects both the business and the owner's time.",
+     "action_tip": "If you don't already have one, schedule your first independent financial review or audit this year."},
+]
+
+# Simple, transparent recommendation rules for the Quick Check-In — plain
+# if/else logic, not a model, so there is nothing here that can hallucinate.
+# Each answer maps to a priority list of topic names; the first topic that
+# actually has a card for the selected stage is used.
+CHECKIN_RULES = {
+    "cash_flow_negative": ["Budgeting & Cash Flow Management", "Saving & Emergency Funds"],
+    "no_separation": ["Separating Personal and Business Money"],
+    "no_savings": ["Saving & Emergency Funds", "Budgeting & Cash Flow Management"],
+}
+
+
 def load_json(path, default):
     if os.path.exists(path):
         with open(path, "r") as f:
@@ -209,6 +297,9 @@ if "gov_db" not in st.session_state:
 
 if "blueprint_db" not in st.session_state:
     st.session_state.blueprint_db = load_json(BLUEPRINT_DB_FILE, DEFAULT_BLUEPRINT_DB)
+
+if "masterclass_db" not in st.session_state:
+    st.session_state.masterclass_db = load_json(MASTERCLASS_DB_FILE, DEFAULT_MASTERCLASS_DB)
 
 if "feedback_log" not in st.session_state:
     st.session_state.feedback_log = load_json(FEEDBACK_FILE, [])
@@ -235,9 +326,11 @@ st.sidebar.markdown("### 🛠️ Developer Controls")
 if st.sidebar.button("🔄 Reset Demo Data (DB + Feedback)"):
     save_json(GOV_DB_FILE, DEFAULT_GOV_DB)
     save_json(BLUEPRINT_DB_FILE, DEFAULT_BLUEPRINT_DB)
+    save_json(MASTERCLASS_DB_FILE, DEFAULT_MASTERCLASS_DB)
     save_json(FEEDBACK_FILE, [])
     st.session_state.gov_db = load_json(GOV_DB_FILE, DEFAULT_GOV_DB)
     st.session_state.blueprint_db = load_json(BLUEPRINT_DB_FILE, DEFAULT_BLUEPRINT_DB)
+    st.session_state.masterclass_db = load_json(MASTERCLASS_DB_FILE, DEFAULT_MASTERCLASS_DB)
     st.session_state.feedback_log = []
     st.rerun()
 
@@ -248,7 +341,7 @@ if view == "📱 Citizen WhatsApp Simulator":
     st.title("WhatsApp-First Interactive Prototype Flow")
     st.info("💡 Simulated View: This emulates the logic executed by the automated Edge Lab WhatsApp bot framework.")
 
-    w_tab1, w_tab2 = st.tabs(["🏛️ Official Government Services", "📺 'It Works. Try It.' Business Blueprints"])
+    w_tab1, w_tab2, w_tab3 = st.tabs(["🏛️ Official Government Services", "📺 'It Works. Try It.' Business Blueprints", "💰 Financial Literacy Masterclass"])
 
     with w_tab1:
         col_nav1, col_nav2 = st.columns(2)
@@ -314,6 +407,83 @@ if view == "📱 Citizen WhatsApp Simulator":
             else:
                 st.warning("🤖 Select an industry sector and capital tier budget or type a keyword search pattern to inspect our interactive 'It Works. Try It.' production summaries.")
 
+    with w_tab3:
+        st.markdown("#### ⚡ Quick Check-In")
+        st.caption("Answer 3 quick questions and get the 2-3 most relevant lessons for your situation right now, instead of browsing the whole library. This is plain rule-based logic, not an AI model — nothing here can invent advice that isn't in the library below.")
+
+        qc_stage = st.selectbox("Your current business stage:", ["Select Stage"] + STAGES, key="qc_stage")
+        cash_flow = st.radio("How would you describe your cash flow right now?", ["Positive", "Breaking even", "Negative"], key="qc_cash", horizontal=True)
+        separate_money = st.radio("Do you keep business money separate from personal money?", ["Yes", "Sort of", "No"], key="qc_sep", horizontal=True)
+        has_savings = st.radio("Do you have any savings set aside for this business?", ["Yes", "No"], key="qc_save", horizontal=True)
+
+        if st.button("✅ Get My Recommendations"):
+            if qc_stage == "Select Stage":
+                st.warning("Select your business stage above first.")
+            else:
+                def find_lesson(stage, topic_candidates):
+                    for t in topic_candidates:
+                        hit = [m for m in st.session_state.masterclass_db if m["stage"] == stage and m["topic"] == t]
+                        if hit:
+                            return hit[0]
+                    return None
+
+                recommended = []
+                if cash_flow == "Negative":
+                    lesson = find_lesson(qc_stage, CHECKIN_RULES["cash_flow_negative"])
+                    if lesson:
+                        recommended.append(lesson)
+                if separate_money in ("No", "Sort of"):
+                    lesson = find_lesson(qc_stage, CHECKIN_RULES["no_separation"])
+                    if lesson:
+                        recommended.append(lesson)
+                if has_savings == "No":
+                    lesson = find_lesson(qc_stage, CHECKIN_RULES["no_savings"])
+                    if lesson:
+                        recommended.append(lesson)
+
+                # de-duplicate while preserving order
+                seen_ids = set()
+                recommended = [r for r in recommended if not (r["id"] in seen_ids or seen_ids.add(r["id"]))]
+
+                if not recommended:
+                    fallback = find_lesson(qc_stage, ["Investing & Growing Your Capital"])
+                    st.success("Your check-in looks healthy! Here's a lesson to keep building on:")
+                    if fallback:
+                        recommended = [fallback]
+
+                if recommended:
+                    for m in recommended:
+                        st.markdown(f"##### 📌 {m['topic']} — {m['stage']}")
+                        st.write(m["summary"])
+                        st.info(f"**Do this next:** {m['action_tip']}")
+                        st.write("---")
+                else:
+                    st.info("No matching lesson published yet for this stage — browse the full library below.")
+
+        st.write("---")
+        st.markdown("#### 📚 Browse the Full Library")
+        col_m1, col_m2 = st.columns(2)
+        with col_m1:
+            m_browse_stage = st.selectbox("Filter by Business Stage:", ["Select Stage"] + STAGES, key="m_browse_stage")
+        with col_m2:
+            m_search = st.text_input("🔍 Search Topics (e.g., 'saving', 'credit', 'tax'):", key="m_browse_search")
+
+        matched_m = []
+        if m_search.strip():
+            q = m_search.lower()
+            matched_m = [m for m in st.session_state.masterclass_db if q in m.get("topic", "").lower() or q in m.get("summary", "").lower()]
+        elif m_browse_stage != "Select Stage":
+            matched_m = [m for m in st.session_state.masterclass_db if m.get("stage") == m_browse_stage]
+
+        if matched_m:
+            for m in matched_m:
+                st.markdown(f"##### 📌 {m['topic']} — {m['stage']}")
+                st.write(m["summary"])
+                st.info(f"**Do this next:** {m['action_tip']}")
+                st.write("---")
+        else:
+            st.caption("Select a stage or search a topic above to see lessons.")
+
     # ------------------------------------------------------------------
     # Keyword Synthesis Search Block (renamed — see note below)
     # ------------------------------------------------------------------
@@ -328,10 +498,11 @@ if view == "📱 Citizen WhatsApp Simulator":
 
         matched_gov_q = [c for c in st.session_state.gov_db if any(w in c.get("title", "").lower() or w in c.get("sector", "").lower() or w in c.get("agency", "").lower() for w in q_lower.split())]
         matched_bp_q = [b for b in st.session_state.blueprint_db if any(w in b.get("title", "").lower() or w in b.get("summary", "").lower() or w in b.get("success_case", "").lower() for w in q_lower.split())]
+        matched_fl_q = [m for m in st.session_state.masterclass_db if any(w in m.get("topic", "").lower() or w in m.get("summary", "").lower() for w in q_lower.split())]
 
         with st.chat_message("assistant"):
             st.markdown("#### Keyword Matches Found")
-            syn_col1, syn_col2 = st.columns(2)
+            syn_col1, syn_col2, syn_col3 = st.columns(3)
 
             with syn_col1:
                 st.markdown("📂 **1. Official Frameworks & Compliance Paths**")
@@ -345,7 +516,7 @@ if view == "📱 Citizen WhatsApp Simulator":
                     st.write("No keyword match in the official services database. Try the stage/sector filters in the first tab instead.")
 
             with syn_col2:
-                st.markdown("📊 **2. 'It Works. Try It.' Financial Literacy Matrix**")
+                st.markdown("📊 **2. 'It Works. Try It.' Case Studies**")
                 if matched_bp_q:
                     for b in matched_bp_q[:1]:
                         st.markdown(f"**Match:** {b.get('title')}")
@@ -355,6 +526,16 @@ if view == "📱 Citizen WhatsApp Simulator":
                         st.markdown(f"🔗 {b.get('media_anchor')}")
                 else:
                     st.write("No keyword match in the blueprint database. Try the sector/tier filters in the second tab instead.")
+
+            with syn_col3:
+                st.markdown("💰 **3. Financial Literacy Masterclass**")
+                if matched_fl_q:
+                    for m in matched_fl_q[:1]:
+                        st.markdown(f"**Match:** {m.get('topic')} ({m.get('stage')})")
+                        st.write(m.get("summary"))
+                        st.info(f"**Do this next:** {m.get('action_tip')}")
+                else:
+                    st.write("No keyword match in the Masterclass library. Try the stage filter in the third tab instead.")
 
 # ==================================================================
 # VIEW 2: CITIZEN USSD SIMULATOR
@@ -386,6 +567,7 @@ elif view == "📟 Citizen USSD Simulator":
         * Leave blank → Main menu
         * `1` → Government Services, then pick a numbered Stage, then a numbered Sector, then (if more than one) a numbered item
         * `2` → Business Blueprints, then pick a numbered Sector, then a numbered item
+        * `3` → Financial Literacy Masterclass, then pick a numbered Stage, then a numbered Topic
         * Menus are generated live from whatever is currently published in the CMS — adding or removing a card here changes what shows up in USSD automatically.
         """)
         if st.button("❌ Terminate Current USSD Session"):
@@ -411,7 +593,7 @@ elif view == "📟 Citizen USSD Simulator":
             screen = INVALID
 
             if not parts:
-                screen = "CON Welcome to Edge Lab.\n1. Government Services\n2. Business Blueprints ('It Works')"
+                screen = "CON Welcome to Edge Lab.\n1. Government Services\n2. Business Blueprints ('It Works')\n3. Financial Literacy Masterclass"
 
             elif parts[0] == "1":
                 stages_avail = [s for s in STAGES if any(c["stage"] == s for c in st.session_state.gov_db)]
@@ -477,6 +659,31 @@ elif view == "📟 Citizen USSD Simulator":
                                 b = items[idx2 - 1]
                                 screen = f"END {b['title']}\nCapital: {b['capital_required']}\nTip: {b['fin_lit_tip'][:140]}"
 
+            elif parts[0] == "3":
+                stages_avail_m = [s for s in STAGES if any(m["stage"] == s for m in st.session_state.masterclass_db)]
+                if len(parts) == 1:
+                    if stages_avail_m:
+                        lines = [f"{i + 1}. {s}" for i, s in enumerate(stages_avail_m)]
+                        screen = "CON Financial Literacy - Choose Stage:\n" + "\n".join(lines)
+                    else:
+                        screen = "END No financial literacy notes published yet."
+                else:
+                    idx1 = safe_idx(parts, 1)
+                    if idx1 and idx1 <= len(stages_avail_m):
+                        stage = stages_avail_m[idx1 - 1]
+                        topics = [m for m in st.session_state.masterclass_db if m["stage"] == stage]
+                        if len(parts) == 2:
+                            if topics:
+                                lines = [f"{i + 1}. {m['topic'][:30]}" for i, m in enumerate(topics)]
+                                screen = f"CON {stage} - Choose Topic:\n" + "\n".join(lines)
+                            else:
+                                screen = "END No financial literacy notes for this stage yet."
+                        else:
+                            idx2 = safe_idx(parts, 2)
+                            if idx2 and idx2 <= len(topics):
+                                m = topics[idx2 - 1]
+                                screen = f"END {m['topic']}\n{m['summary'][:120]}\nDo this: {m['action_tip'][:100]}"
+
             st.code(screen, language="text")
 
 # ==================================================================
@@ -485,7 +692,7 @@ elif view == "📟 Citizen USSD Simulator":
 elif view == "🏛️ Government Admin CMS Portal":
     st.title("Government Admin CMS & Content Management Portal")
 
-    cms_tab1, cms_tab2 = st.tabs(["📝 Institutional Government Profiles", "🎬 'It Works. Try It.' Success Case Upload"])
+    cms_tab1, cms_tab2, cms_tab3 = st.tabs(["📝 Institutional Government Profiles", "🎬 'It Works. Try It.' Success Case Upload", "💰 Financial Literacy Notes"])
 
     with cms_tab1:
         with st.form("cms_gov_form", clear_on_submit=True):
@@ -527,9 +734,30 @@ elif view == "🏛️ Government Admin CMS Portal":
                 save_json(BLUEPRINT_DB_FILE, st.session_state.blueprint_db)
                 st.success(f"🎉 Success! '{b_title}' has been vectorized into the digital library ecosystem.")
 
+    with cms_tab3:
+        with st.form("cms_masterclass_form", clear_on_submit=True):
+            st.markdown("### Publish a Financial Literacy Note")
+            st.caption("General financial-literacy principles are safe to write directly — saving, budgeting, separating money, etc. are universal practice, not Uganda-specific facts. If you cite a specific Uganda rate, rule, or institution here, verify it first, same as the other two tabs. Use an EXISTING topic name to add stage-appropriate depth to a topic that already exists, or write a new topic name to start a new theme.")
+
+            existing_topics = sorted({m["topic"] for m in st.session_state.masterclass_db})
+            st.caption("Existing topics: " + ", ".join(existing_topics) if existing_topics else "No topics published yet.")
+
+            fl_topic = st.text_input("Topic Name:", value="Saving & Emergency Funds")
+            fl_stage = st.selectbox("Business Stage:", STAGES, key="fl_stage")
+            fl_summary = st.text_area("Short Lesson (1-3 sentences):", value="Explain the core financial-literacy point in plain language.")
+            fl_action = st.text_input("Concrete Action Tip (one clear next step):", value="A specific, doable action the reader can take this week.")
+
+            if st.form_submit_button("📌 Publish Financial Note"):
+                st.session_state.masterclass_db.append({
+                    "id": str(uuid.uuid4())[:8], "topic": fl_topic, "stage": fl_stage,
+                    "summary": fl_summary, "action_tip": fl_action
+                })
+                save_json(MASTERCLASS_DB_FILE, st.session_state.masterclass_db)
+                st.success(f"📌 Published '{fl_topic}' for {fl_stage}.")
+
     st.write("---")
     st.markdown("### 📋 Active Content Registries Summary")
-    exp_gov, exp_bp = st.columns(2)
+    exp_gov, exp_bp, exp_fl = st.columns(3)
     with exp_gov:
         st.subheader("Official Government Registry")
         for c in st.session_state.gov_db:
@@ -547,6 +775,15 @@ elif view == "🏛️ Government Admin CMS Portal":
                 if st.button("Delete Content Record", key=f"del_b_{b['id']}"):
                     st.session_state.blueprint_db = [i for i in st.session_state.blueprint_db if i["id"] != b["id"]]
                     save_json(BLUEPRINT_DB_FILE, st.session_state.blueprint_db)
+                    st.rerun()
+    with exp_fl:
+        st.subheader("Financial Literacy Notes")
+        for m in st.session_state.masterclass_db:
+            with st.expander(f"💰 {m.get('topic')} ({m.get('stage')})"):
+                st.write(m.get("summary"))
+                if st.button("Delete Financial Note", key=f"del_fl_{m['id']}"):
+                    st.session_state.masterclass_db = [i for i in st.session_state.masterclass_db if i["id"] != m["id"]]
+                    save_json(MASTERCLASS_DB_FILE, st.session_state.masterclass_db)
                     st.rerun()
 
 # ==================================================================
