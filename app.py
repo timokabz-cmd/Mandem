@@ -1,7 +1,20 @@
 import streamlit as st
+import pandas as pd
+import json
+import os
+import uuid
 
 # ==================================================================
-# 🔒 TEMPORARY SECURITY LOCK
+# 1. MANDATORY PAGE CONFIG (Must be the first Streamlit command run)
+# ==================================================================
+st.set_page_config(
+    page_title="Mandem Platform",
+    page_icon="🇺🇬",
+    layout="wide"
+)
+
+# ==================================================================
+# 🔒 TEMPORARY SECURITY LOCK GATE
 # ==================================================================
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
@@ -10,22 +23,22 @@ if not st.session_state.authenticated:
     st.title("🔒 Under Maintenance")
     st.write("This platform prototype is currently locked for updates.")
     
-    password_input = st.text_input("Enter Access PIN:", type="password")
-    if st.button("Unlock Platform"):
-        if password_input == "2567":  # 👈 Change this to whatever password/PIN you want
-            st.session_state.authenticated = True
-            st.rerun()
-        else:
-            st.error("Access Denied. Invalid PIN.")
-            
-    st.stop()  # 🛑 This completely stops the rest of the script from running!
+    # Form layout keeps the PIN input stable on mobile touchscreens
+    with st.form("login_gate"):
+        password_input = st.text_input("Enter Access PIN:", type="password")
+        submit_clicked = st.form_submit_button("Unlock Platform")
+        
+        if submit_clicked:
+            if password_input == "2567":
+                st.session_state.authenticated = True
+                st.rerun()
+            else:
+                st.error("Access Denied. Invalid PIN.")
+                
+    st.stop()  # 🛑 Hard stop prevents anything below this line from executing
 # ==================================================================
 
-import streamlit as st
-import pandas as pd
-import json
-import os
-import uuid
+# YOUR ORIGINAL CODE (STAGES, SECTORS, AND DATA CARDS) CONTINUES SAFELY BELOW...
 
 # ------------------------------------------------------------------
 # 1. Page Configuration
